@@ -2,11 +2,11 @@ package org.dotwebstack.theatre.application.config;
 
 public class Constants {
 
-  public final static String SPRING_PROFILE_DEVELOPMENT = "development";
+  public static final String SPRING_PROFILE_DEFAULT_PROPERTY = "spring.profiles.default";
 
-  public final static String SPRING_PROFILE_PRODUCTION = "production";
+  public static final String SPRING_PROFILE_DEVELOPMENT = "development";
 
-  public final static String SPRING_PROFILE_TEST = "test";
+  public static final String SPRING_PROFILE_PRODUCTION = "production";
 
   private Constants() {
     throw new IllegalStateException(
