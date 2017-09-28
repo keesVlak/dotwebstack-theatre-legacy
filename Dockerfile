@@ -1,4 +1,4 @@
-FROM  maven:3.5-jdk-8-onbuild as builder
+FROM maven:3.5-jdk-8-onbuild as builder
 
 FROM openjdk:8-jre
 
