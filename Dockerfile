@@ -1,6 +1,6 @@
 FROM maven:3.3-jdk-8-onbuild as builder
 
-FROM java:8
+FROM openjdk:8-jre
 
 COPY --from=builder /usr/src/app/target/dotwebstack-theatre*.jar /opt/dotwebstack-theatre.jar
 
