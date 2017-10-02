@@ -2,6 +2,8 @@
 
 A reference implementation of the DotWebStack Framework, based on the most common standards. This project is the successor of the Linked Data Theatre 1.x.
 
+[![Build Status](https://travis-ci.org/dotwebstack/dotwebstack-theatre.svg?branch=master)](https://travis-ci.org/dotwebstack/dotwebstack-theatre)
+
 ## Run application
 
 ### Run with profile (.jar)
