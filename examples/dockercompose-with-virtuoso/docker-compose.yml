@@ -19,4 +19,4 @@ services:
     ports:
       - "80:8080"
     volumes:
-      - $PWD/config-docker:/opt/config
+      - ./config-docker:/opt/config

@@ -52,6 +52,10 @@ $ cd examples/dockercompose-with-virtuoso
 $ docker-compose up
 ```
 
+The above should work both on `*`nix systems and Windows (tested with Windows 7 and 10) but with Windows the following should be taken care of:
+- On Windows 7, Docker Quickstart terminal should be started
+- The composefile (including all sub dirs) should be placed somewhere in your home directory, otherwise the volume mapping is not working
+
 To verify if your configuration is running a GET request can be done (assuming you are at localhost) to http://localhost/dbp/api/v1/breweries:
 
 ```bash
@@ -61,4 +65,3 @@ $ curl http://localhost/dbp/api/v1/breweries
 ## License
 
 The DotWebStack Theatre is published under the [GNU GPLv3 License](LICENSE.md).
-
