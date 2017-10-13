@@ -9,17 +9,59 @@ produces:
 paths:
   /breweries:
     get:
-      x-dotwebstack-information-product: "http://dbeerpedia.org#Breweries"
+      x-dotwebstack-information-product: "http://dbeerpedia.org#TupleBreweries"
       responses:
         200:
           description: OK
           schema:
             type: array
+            required:
+              - name
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  format: string
+                sinds:
+                  type: integer
+                  format: int32
+                fte:
+                  type: number
+                  format: double
+                oprichting:
+                  type: string
+                  format: datetime
+                plaats:
+                  type: string
+                  format: string
   /breweries/{id}:
     get:
-      x-dotwebstack-information-product: "http://dbeerpedia.org#Breweries"
+      x-dotwebstack-information-product: "http://dbeerpedia.org#TupleBreweries"
       responses:
         200:
           description: OK
           schema:
             type: object
+            required:
+              - naam
+              - sinds
+              - fte
+              - oprichting
+              - plaats
+            properties:
+              naam:
+                type: string
+                format: string
+              sinds:
+                type: integer
+                format: int32
+              fte:
+                type: number
+                format: double
+              oprichting:
+                type: string
+                format: datetime
+              plaats:
+                type: string
+                format: string

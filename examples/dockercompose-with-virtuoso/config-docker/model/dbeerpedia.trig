@@ -2,22 +2,44 @@
 @prefix elmo: <http://dotwebstack.org/def/elmo#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix config: <http://dotwebstack.org/configuration/>.
 
-dbeerpedia:Site a elmo:Site;
-  elmo:domain "dbeerpedia.org";
-.
+GRAPH config:Theatre {
+  dbeerpedia:Site a elmo:Site;
+    elmo:domain "dbeerpedia.org";
+  .
 
-dbeerpedia:Stage a elmo:Stage;
-  elmo:site dbeerpedia:Site;
-  elmo:basePath: "/dbp";
-.
+  dbeerpedia:Stage a elmo:Stage;
+    elmo:site dbeerpedia:Site;
+    elmo:basePath "/dbp/ld/v1";
+  .
 
-dbeerpedia:Backend a elmo:SparqlBackend;
-  elmo:endpoint "http://virtuoso:8890/sparql"^^xsd:anyURI;
-.
+  dbeerpedia:Backend a elmo:SparqlBackend;
+    elmo:endpoint "http://localhost:8890/sparql"^^xsd:anyURI;
+  .
 
-dbeerpedia:Breweries a elmo:InformationProduct;
-  rdfs:label "Beer breweries in The Netherlands";
-  elmo:backend dbeerpedia:Backend;
-  elmo:query "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o . ?s a <http://dbeerpedia.org#Brewery> }";
-.
+  dbeerpedia:GraphBreweryListRepresentation a elmo:Representation;
+    elmo:urlPattern "/graph-breweries";
+    elmo:stage dbeerpedia:Stage;
+    elmo:informationProduct dbeerpedia:GraphBreweries;
+  .
+
+  dbeerpedia:TupleBreweryListRepresentation a elmo:Representation;
+    elmo:urlPattern "/tuple-breweries";
+    elmo:stage dbeerpedia:Stage;
+    elmo:informationProduct dbeerpedia:TupleBreweries;
+  .
+
+  dbeerpedia:TupleBreweries a elmo:InformationProduct;
+    rdfs:label "Beer breweries in The Netherlands";
+    elmo:backend dbeerpedia:Backend;
+    elmo:query "SELECT ?name WHERE { ?s rdfs:label ?name . ?s a <http://dbeerpedia.org#Brewery> }";
+  .
+
+  dbeerpedia:GraphBreweries a elmo:InformationProduct;
+    rdfs:label "Beer breweries in The Netherlands";
+    elmo:backend dbeerpedia:Backend;
+    elmo:query "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o . ?s a <http://dbeerpedia.org#Brewery> }";
+  .
+}
+
