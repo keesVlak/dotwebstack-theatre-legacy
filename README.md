@@ -62,6 +62,27 @@ To verify if your configuration is running a GET request can be done (assuming y
 $ curl http://localhost/dbp/api/v1/breweries
 ```
 
+## Release
+
+To release a new version, run the following statement and follow instructions:
+
+Advice: update property dotwebstack.framework.version in the pom.xml manually: 
+- Before remove -SNAPSHOT and 
+- After add it agian. 
+Otherwise mvn release will replace the property with the real value.
+
+```
+mvn release:prepare
+mvn release:perform
+```
+
+
+Clean up afterwards:
+
+```
+mvn release:clean
+```
+
 ## License
 
 The DotWebStack Theatre is published under the [GNU GPLv3 License](LICENSE.md).
