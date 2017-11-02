@@ -66,16 +66,12 @@ $ curl http://localhost/dbp/api/v1/breweries
 
 To release a new version, run the following statement and follow instructions:
 
-Advice: update property dotwebstack.framework.version in the pom.xml manually: 
-- Before remove -SNAPSHOT and 
-- After add it agian. 
-Otherwise mvn release will replace the property with the real value.
+Set property dotwebstack.framework.version in the pom.xml to the newest stable dotwebstack framework version.
 
 ```
 mvn release:prepare
 mvn release:perform
 ```
-
 
 Clean up afterwards:
 
