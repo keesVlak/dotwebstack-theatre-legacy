@@ -2,7 +2,7 @@
 
 A reference implementation of the DotWebStack Framework, based on the most common standards. This project is the successor of the Linked Data Theatre 1.x.
 
-[![Build Status](https://travis-ci.org/dotwebstack/dotwebstack-theatre-legcay.svg?branch=master)](https://travis-ci.org/dotwebstack/dotwebstack-theatre-legcay)
+[![Build Status](https://travis-ci.org/dotwebstack/dotwebstack-theatre-legacy.svg?branch=master)](https://travis-ci.org/dotwebstack/dotwebstack-theatre-legacy)
 
 All generic dotwebstack documentation can be found in [https://github.com/dotwebstack/dotwebstack].
 
