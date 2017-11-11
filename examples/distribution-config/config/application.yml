@@ -1,0 +1,13 @@
+spring:
+  main:
+    banner-mode: "off"
+  jersey:
+    type: filter
+
+logging.level:
+  org.dotwebstack.framework: INFO
+
+dotwebstack:
+  config:
+    resourcePath: file:./config
+    systemGraph: http://dotwebstack.org/configuration/Theatre

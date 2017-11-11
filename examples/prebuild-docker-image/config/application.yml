@@ -8,3 +8,4 @@ logging.level:
 dotwebstack:
   config:
     resourcePath: file:/opt/config
+    systemGraph: http://dotwebstack.org/configuration/SandboxTheatre

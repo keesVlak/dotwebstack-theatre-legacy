@@ -8,6 +8,12 @@ All generic dotwebstack documentation can be found in [https://github.com/dotweb
 
 ## Run application
 
+### Using a pre-build distribution
+
+Download a zip containing a pre-build distribution (or create one, using `mvn:assembly:single`).
+
+Start the theatre by executing: `start.bat`.
+
 ### Configuration
 
 DotWebStack Theatre needs several configuration files. Preferably they should be stored in a config directory. These config files are:
@@ -70,6 +76,13 @@ To verify if your configuration is running a GET request can be done (assuming y
 
 ```bash
 $ curl http://localhost/dbp/api/v1/breweries
+```
+
+## Assembly
+To create a zip containing a working version of the theatre, use:
+
+```
+mvn assembly:single
 ```
 
 ## Release

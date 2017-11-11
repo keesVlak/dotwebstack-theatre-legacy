@@ -1,3 +1,4 @@
 * text eol=lf
 src/main/webapp/** binary
 src/main/resources/xsl/** binary
+*.bat binary
