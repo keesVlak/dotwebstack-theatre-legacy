@@ -11,6 +11,7 @@ import java.io.StringReader;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.eclipse.rdf4j.rio.Rio;
@@ -18,6 +19,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 import org.dotwebstack.framework.frontend.ld.entity.GraphEntity;
 import org.dotwebstack.framework.frontend.ld.entity.TupleEntity;
+import org.dotwebstack.framework.frontend.ld.appearance.Appearance;
 import org.dotwebstack.framework.frontend.ld.representation.Representation;
 import org.dotwebstack.ldtlegacy.pipe.StartTerminal;
 import org.dotwebstack.ldtlegacy.pipe.EndTerminal;
@@ -69,12 +71,24 @@ public class CreatePage {
 			StartTerminal configPipe1 = new StartTerminal(representation) {
 				@Override
 				public void filter(Object input, InputStream inputStream, OutputStream outputStream) throws Exception {
-					Model model = ((Representation)input).getAppearance().getModel();
+          //Due to a missing feature in the Represention class, getApperance can return null, in such a case, an empty appearance is needed
+          Appearance appearance = ((Representation)input).getAppearance();
+          Model model;
+          if (appearance!=null) {
+            model = appearance.getModel();
+          } else {
+            model = new LinkedHashModel();
+          }
 					Rio.write(model, outputStream, RDFFormat.RDFXML);
 				}
 			};
-			//Merge with identifier of appearance
-			Pipe configPipe2 = new Pipe(representation.getAppearance().getIdentifier().toString(),configPipe1) {
+			//Merge with identifier of appearance, if any exists
+      Appearance appearance = representation.getAppearance();
+      String appearanceIri = "";
+      if (appearance!=null) {
+        appearanceIri = appearance.getIdentifier().toString();
+      }
+			Pipe configPipe2 = new Pipe(appearanceIri,configPipe1) {
 				@Override
 				public void filter(Object input, InputStream inputStream, OutputStream outputStream) throws Exception {
 					XMLMerger.merge("root", outputStream, new StreamSource(new StringReader(String.format("<appearance>%s</appearance>",(String)input))), new StreamSource(inputStream));
