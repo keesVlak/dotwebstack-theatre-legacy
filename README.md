@@ -12,7 +12,11 @@ All generic dotwebstack documentation can be found in [https://github.com/dotweb
 
 Download a zip containing a pre-build distribution (or create one, using `mvn:assembly:single`).
 
-Start the theatre by executing: `start.bat`.
+Most recent distribution can be found here: [dotwebstack-theatre-legacy-0.0.10-SNAPSHOT-distribution](https://github.com/dotwebstack/dotwebstack-theatre-legacy/releases/download/v0.0.9/dotwebstack-theatre-legacy-0.0.10-SNAPSHOT-distribution.zip)
+
+Start the theatre by executing: `start.bat` or `start.sh`.
+
+Test the theatre by visiting [http://localhost:8080](http://localhost:8080).
 
 ### Configuration
 

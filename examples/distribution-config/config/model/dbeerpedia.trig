@@ -5,12 +5,9 @@
 @prefix config: <http://dotwebstack.org/configuration/>.
 
 GRAPH config:Theatre {
-  dbeerpedia:Site a elmo:Site;
-    elmo:domain "localhost";
-  .
 
   dbeerpedia:Stage a elmo:Stage;
-    elmo:site dbeerpedia:Site;
+    elmo:site config:Site;
     elmo:basePath "/dbp/ld/v1";
   .
 

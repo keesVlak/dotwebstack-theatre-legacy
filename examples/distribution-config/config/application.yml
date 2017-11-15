@@ -5,9 +5,10 @@ spring:
     type: filter
 
 logging.level:
-  org.dotwebstack.framework: INFO
+  org.dotwebstack.framework: DEBUG
 
 dotwebstack:
   config:
     resourcePath: file:./config
+    host: localhost
     systemGraph: http://dotwebstack.org/configuration/Theatre
