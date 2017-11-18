@@ -4,13 +4,13 @@ A reference implementation of the DotWebStack Framework, based on the most commo
 
 [![Build Status](https://travis-ci.org/dotwebstack/dotwebstack-theatre-legacy.svg?branch=master)](https://travis-ci.org/dotwebstack/dotwebstack-theatre-legacy)
 
-All generic dotwebstack documentation can be found in [https://github.com/dotwebstack/dotwebstack].
+All generic dotwebstack documentation can be found in [https://github.com/dotwebstack/dotwebstack](https://github.com/dotwebstack/dotwebstack).
 
 ## Run application
 
 ### Using a pre-build distribution
 
-Download a zip containing a pre-build distribution (or create one, using `mvn:assembly:single`).
+Download a zip containing a pre-build distribution (or create one, using `mvn assembly:single`).
 
 Most recent distribution can be found here: [dotwebstack-theatre-legacy-0.0.10-SNAPSHOT-distribution](https://github.com/dotwebstack/dotwebstack-theatre-legacy/releases/download/v0.0.9/dotwebstack-theatre-legacy-0.0.10-SNAPSHOT-distribution.zip)
 
