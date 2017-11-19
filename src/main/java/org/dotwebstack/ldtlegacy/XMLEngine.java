@@ -14,7 +14,13 @@ public class XMLEngine {
 	
 	private static ClassPathResourceURIResolver uriResolver = null;
 
-	public static void transform(StreamSource source, String xslResource, StreamResult result) throws TransformerConfigurationException,TransformerException { 
+	public static void transform(StreamSource source, String xslResource, StreamResult result) throws TransformerConfigurationException,TransformerException {
+    
+    transform(source,xslResource,result,null);
+    
+  }
+
+	public static void transform(StreamSource source, String xslResource, StreamResult result, Object input) throws TransformerConfigurationException,TransformerException { 
 
 		// Set resolver, only ones
 		if (uriResolver == null) {
@@ -28,6 +34,11 @@ public class XMLEngine {
 		// Create a transformer for the stylesheet. 
 		Transformer transformer = tfactory.newTransformer(new StreamSource(xslStream)); 
 
+    // Set parameter, if any
+    if (input!=null) {
+      transformer.setParameter("args",input);
+    }
+    
 		// Transform the source XML 
 		transformer.transform(source, result);
 		

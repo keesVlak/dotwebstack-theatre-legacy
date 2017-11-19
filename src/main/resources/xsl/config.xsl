@@ -19,23 +19,28 @@
 </xsl:template>
 
 <xsl:template match="/">
-	<xsl:variable name="appearance" select="root/appearance"/>
 	<rdf:RDF>
-		<rdf:Description rdf:about="http://localhost:8080/stage#Config">
-			<elmo:query>INFOPROD</elmo:query>
-			<xsl:for-each select="root/rdf:RDF/rdf:Description[@rdf:about=$appearance]">
-				<xsl:apply-templates select="." mode="type"/>
-				<xsl:for-each select="elmo2:fragment">
-					<elmo:fragment rdf:nodeID="{@rdf:nodeID}"/>
-				</xsl:for-each>
-			</xsl:for-each>
-		</rdf:Description>
-		<xsl:for-each select="root/rdf:RDF/rdf:Description[exists(elmo2:appliesTo)]">
+  
+    <xsl:for-each select="appearances/appearance">
+      <xsl:variable name="appearance" select="id"/>
+      <rdf:Description rdf:about="{$appearance}">
+        <elmo:query>INFOPROD</elmo:query>
+        <xsl:for-each select="rdf:RDF/rdf:Description[@rdf:about=$appearance]">
+          <xsl:apply-templates select="." mode="type"/>
+          <xsl:for-each select="elmo2:fragment">
+            <elmo:fragment rdf:nodeID="{@rdf:nodeID}"/>
+          </xsl:for-each>
+        </xsl:for-each>
+      </rdf:Description>
+    </xsl:for-each>
+    
+		<xsl:for-each select="appearances/appearance/rdf:RDF/rdf:Description[exists(elmo2:appliesTo)]">
 			<rdf:Description rdf:nodeID="{@rdf:nodeID}">
 				<elmo:applies-to><xsl:value-of select="elmo2:appliesTo"/></elmo:applies-to>
 				<xsl:copy-of select="rdfs:label"/>
 			</rdf:Description>
 		</xsl:for-each>
+    
 	</rdf:RDF>
 </xsl:template>
 

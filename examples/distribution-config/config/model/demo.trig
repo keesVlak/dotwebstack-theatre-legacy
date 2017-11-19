@@ -14,11 +14,19 @@ GRAPH config:Theatre {
     elmo:endpoint "http://dbpedia.org/sparql"^^xsd:anyURI;
   .
   
+  config:AMenu a elmo:Representation;
+    elmo:urlPattern "/menu";
+    elmo:stage config:Stage;
+    elmo:informationProduct config:MenuData;
+    elmo:appearance config:MenuAppearance;
+  .
+  
   config:Homepage a elmo:Representation;
     elmo:urlPattern "";
     elmo:stage config:Stage;
     elmo:informationProduct config:HomepageData;
     elmo:appearance config:HomepageAppearance;
+    elmo:contains config:AMenu;
   .
 
   config:HomepageAppearance a elmo:HtmlAppearance;
@@ -46,6 +54,22 @@ GRAPH config:Theatre {
       }
       WHERE {}
     """
+  .
+
+  config:MenuAppearance a elmo:NavbarSearchAppearance
+  .
+  
+  config:MenuData a elmo:InformationProduct;
+    elmo:backend config:DBPediaBackend;
+    elmo:query """
+      prefix elmo1: <http://bp4mc2.org/elmo/def#>
+      CONSTRUCT {
+        [] rdfs:label "Demo";
+          elmo1:data [elmo1:index "1"; rdfs:label "Menu 1"]
+        .
+      }
+      WHERE {}
+    """;
   .
   
   config:Amersfoort a elmo:Representation;
