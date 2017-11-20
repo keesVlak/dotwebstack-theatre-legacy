@@ -68,16 +68,17 @@ public class CreatePage {
       //Construct config pipe
       //Get XML configuration according to elmo2 vocabulary
 
-      //Get all appearance data (multiple representations)
+      //Get appearance data
       ByteArrayOutputStream appearanceData = new ByteArrayOutputStream();
       XMLMerger configMerger = new XMLMerger(appearanceData);
       configMerger.startMerging("appearances");
       addAppearance(configMerger,representation);
-      //At this moment, only one subRepresentation can exists
-      Representation subRepresentation = representation.getSubRepresentation();
-      if (subRepresentation!=null) {
+
+      //Get appearances from all sub representations
+      for (Representation subRepresentation : representation.getSubRepresentations()) {
         addAppearance(configMerger,subRepresentation);
       }
+      
       configMerger.finishMerging();
 
       //Translate to elmo1 vocabulary configuration
@@ -136,42 +137,10 @@ public class CreatePage {
       //Start the datapipe
       dataPipe3.start();
 
-      //Build a pipe to process a subrepresentation. The result should be part of the rdfData stream.
-      //At this moment: only one subRepresentation is available, and no RDF data is currently available from the framework
-      if (subRepresentation!=null) {
-        
-        //SubRepresentation is present, so start adding the subrepresentation
-        StartTerminal subDataPipe1 = new StartTerminal(subRepresentation) {
-          @Override
-          public void filter(Object input, InputStream inputStream, OutputStream outputStream) throws Exception {
-            //The data of the subrepresentation isn't available yet, so we need to fetch it...
-            FrameworkGhost.getXML((Representation)input,outputStream);
-          }
-        };
-        //Transform from sparql result to rdf (cleaned)
-        Pipe subDataPipe2 = new Pipe(view,subDataPipe1) {
-          @Override
-          public void filter(Object input, InputStream inputStream, OutputStream outputStream) throws Exception {
-            XMLMerger.merge("root",outputStream,new StreamSource(inputStream), new StreamSource(new ByteArrayInputStream(((ByteArrayOutputStream)input).toByteArray())));
-          }
-        };
-      //original sparql2rdfa doesn't expect a view, but a representation. In this case, we supply an index to the stylesheet
-        Pipe subDataPipe3 = new Pipe(subDataPipe2) {
-          @Override
-          public void filter(Object input, InputStream inputStream, OutputStream outputStream) throws Exception {
-            XMLEngine.transform(new StreamSource(inputStream), "xsl/sparql2rdfa.xsl", new StreamResult(outputStream),1);
-          }
-        };
-        //Add result of information product to result stream (buffered)
-        EndTerminal subDataPipe4 = new EndTerminal(dataMerger,subDataPipe3,rdfData) {
-          @Override
-          public void filter(Object input, InputStream inputStream, OutputStream outputStream) throws Exception {
-            ((XMLMerger)input).addXML(new StreamSource(inputStream));
-          }
-        };
-        
-        //Start the datapipe
-        subDataPipe4.start();
+      
+      //Fetch data from all sub representations. The result will be part of the rdfData stream.
+      for (Representation subRepresentation : representation.getSubRepresentations()) {
+        addData(dataMerger, view, subRepresentation);
       }
       
       //Finish merging
@@ -251,5 +220,41 @@ public class CreatePage {
     };
     //Start the whole pipe
     pipe3.start();
+  }
+  
+  private static void addData(XMLMerger merger, OutputStream view, Representation representation) throws IOException {
+
+    //SubRepresentation is present, so start adding the subrepresentation
+    StartTerminal pipe1 = new StartTerminal(representation) {
+      @Override
+      public void filter(Object input, InputStream inputStream, OutputStream outputStream) throws Exception {
+        //The data of the subrepresentation isn't available yet, so we need to fetch it...
+        FrameworkGhost.getXML((Representation)input,outputStream);
+      }
+    };
+    //Transform from sparql result to rdf (cleaned)
+    Pipe pipe2 = new Pipe(view,pipe1) {
+      @Override
+      public void filter(Object input, InputStream inputStream, OutputStream outputStream) throws Exception {
+        XMLMerger.merge("root",outputStream,new StreamSource(inputStream), new StreamSource(new ByteArrayInputStream(((ByteArrayOutputStream)input).toByteArray())));
+      }
+    };
+    //original sparql2rdfa doesn't expect a view, but a representation. In this case, we supply an index to the stylesheet
+    Pipe pipe3 = new Pipe(pipe2) {
+      @Override
+      public void filter(Object input, InputStream inputStream, OutputStream outputStream) throws Exception {
+        XMLEngine.transform(new StreamSource(inputStream), "xsl/sparql2rdfa.xsl", new StreamResult(outputStream),1);
+      }
+    };
+    //Add result of information product to result stream (buffered)
+    EndTerminal pipe4 = new EndTerminal(merger,pipe3,null) {
+      @Override
+      public void filter(Object input, InputStream inputStream, OutputStream outputStream) throws Exception {
+        ((XMLMerger)input).addXML(new StreamSource(inputStream));
+      }
+    };
+
+    //Start the datapipe
+    pipe4.start();
   }
 }
