@@ -14,13 +14,13 @@ GRAPH config:Theatre {
     elmo:endpoint "http://dbpedia.org/sparql"^^xsd:anyURI;
   .
   
-  config:AMenu a elmo:Representation;
+  config:Menu a elmo:Representation;
     elmo:stage config:Stage;
     elmo:informationProduct config:MenuData;
     elmo:appearance config:MenuAppearance;
   .
 
-  config:AFooter a elmo:Representation;
+  config:Footer a elmo:Representation;
     elmo:stage config:Stage;
     elmo:informationProduct config:FooterData;
     elmo:appearance config:FooterAppearance;
@@ -31,8 +31,8 @@ GRAPH config:Theatre {
     elmo:stage config:Stage;
     elmo:informationProduct config:HomepageData;
     elmo:appearance config:HomepageAppearance;
-    elmo:contains config:AMenu;
-    elmo:contains config:AFooter;
+    elmo:contains config:Menu;
+    elmo:contains config:Footer;
   .
   config:HomepageAppearance a elmo:HtmlAppearance;
   .
