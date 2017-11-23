@@ -12,17 +12,16 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import lombok.NonNull;
 import org.dotwebstack.framework.backend.ResultType;
+import org.dotwebstack.framework.frontend.ld.entity.TupleEntity;
 import org.dotwebstack.framework.frontend.ld.writer.EntityWriter;
+import org.dotwebstack.ldtlegacy.CreatePage;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.dotwebstack.framework.frontend.ld.entity.TupleEntity;
-import org.dotwebstack.ldtlegacy.CreatePage;
+import org.eclipse.rdf4j.rio.Rio;
 import org.springframework.stereotype.Service;
 
-import org.eclipse.rdf4j.rio.Rio;
-import org.eclipse.rdf4j.rio.RDFFormat;
 
 @Service
 @EntityWriter(resultType = ResultType.TUPLE)
@@ -32,7 +31,8 @@ public class HtmlTupleEntityWriter implements MessageBodyWriter<TupleEntity> {
   @Override
   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations,
       MediaType mediaType) {
-    return TupleEntity.class.isAssignableFrom(type) && mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
+    return TupleEntity.class.isAssignableFrom(type)
+        && mediaType.isCompatible(MediaType.TEXT_HTML_TYPE);
   }
 
   @Override

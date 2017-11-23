@@ -21,11 +21,12 @@ public abstract class EndTerminal {
     this.outputStream = output;
   }
 
-  public abstract void filter(Object input, InputStream inputStream, OutputStream outputStream) throws Exception;
+  public abstract void filter(Object input, InputStream inputStream, OutputStream outputStream)
+      throws Exception;
 
   public void start() {
+    //Start the whole channel
     try {
-      //Start the whole channel
       InputStream inputStream = null;
       if (inputPipe != null) {
         inputPipe.start();
@@ -33,6 +34,7 @@ public abstract class EndTerminal {
       }
       filter(input,inputStream,outputStream);
     } catch (Exception ex) {
+      //Nothing to catch
     }
   }
 }

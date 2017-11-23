@@ -10,7 +10,7 @@ import org.eclipse.rdf4j.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 
 /********
- FrameworkGhost is a class that contains functionality that should be part of the framework, but isn't
+ FrameworkGhost is a class that contains functionality that could be part of the framework.
  A separate class is made, to make clear where reengineering should take place.
 
  Data from subrepresentations aren't retrieved as part of RepresentationRequestHandler
@@ -24,7 +24,7 @@ public class FrameworkGhost {
     return representation.getInformationProduct().getResult(ImmutableMap.of());
   }
   
-  public static void getXML(Representation representation, OutputStream outputStream) {
+  public static void getXml(Representation representation, OutputStream outputStream) {
     Object result = representation.getInformationProduct().getResult(ImmutableMap.of());
     if (result instanceof GraphQueryResult) {
       QueryResults.report((GraphQueryResult)result,new RDFXMLWriter(outputStream));

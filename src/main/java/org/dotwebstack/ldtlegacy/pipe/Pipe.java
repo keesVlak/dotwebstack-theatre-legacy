@@ -2,9 +2,9 @@ package org.dotwebstack.ldtlegacy.pipe;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream; 
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream; 
-import java.io.OutputStream; 
 
 public abstract class Pipe extends Thread {
   //Inputs to the pipe
@@ -56,7 +56,8 @@ public abstract class Pipe extends Thread {
     return inputSinkStream;
   }
 
-  public abstract void filter(Object input, InputStream inputStream, OutputStream outputStream) throws Exception;
+  public abstract void filter(Object input, InputStream inputStream, OutputStream outputStream)
+      throws Exception;
 
   @Override
   public void start() {
@@ -77,10 +78,12 @@ public abstract class Pipe extends Thread {
       }
       filter(input,inputStream,outputStream);
     } catch (Exception ex) {
+      //Nothing to catch
     } finally {
       try {
         outputStream.close();
       } catch (IOException ex) {
+        //Nothing to catch
       }
     }
   }
