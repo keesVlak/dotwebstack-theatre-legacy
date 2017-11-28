@@ -121,7 +121,10 @@ GRAPH config:Theatre {
         <http://dbpedia.org/resource/Amersfoort> ?p ?o
       }
       WHERE {
-        <http://dbpedia.org/resource/Amersfoort> ?p ?o
+        <http://dbpedia.org/resource/Amersfoort> ?p ?o.
+        FILTER (?p = rdfs:label
+             || ?p = rdf:type
+        )
       }
     """;
   .
