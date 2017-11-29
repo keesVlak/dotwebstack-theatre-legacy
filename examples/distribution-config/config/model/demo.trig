@@ -1,7 +1,9 @@
 @prefix elmo: <http://dotwebstack.org/def/elmo#> .
+@prefix elmo-rt: <http://dotwebstack.org/def/elmo/result-type/>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix config: <http://dotwebstack.org/configuration/>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
 
 GRAPH config:Theatre {
 
@@ -12,6 +14,10 @@ GRAPH config:Theatre {
 
   config:DBPediaBackend a elmo:SparqlBackend;
     elmo:endpoint "http://dbpedia.org/sparql"^^xsd:anyURI;
+  .
+  
+  config:LOVBackend a elmo:SparqlBackend;
+    elmo:endpoint "http://lov.okfn.org/dataset/lov/sparql"^^xsd:anyURI;
   .
   
   config:Menu a elmo:Representation;
@@ -66,8 +72,10 @@ GRAPH config:Theatre {
     elmo:backend config:DBPediaBackend;
     elmo:query """
       prefix elmo1: <http://bp4mc2.org/elmo/def#>
+      prefix xhtml: <http://www.w3.org/1999/xhtml/vocab#>
       CONSTRUCT {
         [] rdfs:label "Demo";
+          xhtml:search "search";
           elmo1:data [elmo1:index "1"; rdfs:label "Menu 1"]
         .
       }
@@ -129,5 +137,32 @@ GRAPH config:Theatre {
     """;
   .
 
+  config:Search a elmo:Representation;
+    elmo:urlPattern "/search";
+    elmo:stage config:Stage;
+    elmo:contains config:Menu;
+    elmo:informationProduct config:SearchData;
+  .
+  
+  config:TermParameter a elmo:TermFilter;
+    elmo:name "term";
+    elmo:shape [
+      sh:datatype xsd:string;
+    ];
+  .
+  
+  config:SearchData a elmo:InformationProduct;
+    elmo:backend config:LOVBackend;
+    elmo:requiredParameter config:TermParameter;
+    elmo:resultType elmo-rt:Tuple;
+    elmo:query """
+      PREFIX vann: <http://purl.org/vocab/vann/>
+      SELECT *
+      WHERE {
+        ?vocabURI vann:preferredNamespacePrefix ?term.
+      }
+      LIMIT 10
+    """;
+  .
+  
 }
-
