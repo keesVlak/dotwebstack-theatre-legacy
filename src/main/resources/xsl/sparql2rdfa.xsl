@@ -40,7 +40,9 @@
 	xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
 >
 
-<xsl:key name="fragment" match="/root/view/representation/fragment" use="@applies-to"/> <!-- CHANGED: added '/view' -->
+<xsl:param name="args"/>
+
+<xsl:key name="fragment" match="/root/view/representation[$args]/fragment" use="@applies-to"/> <!-- CHANGED: added '/view' -->
 
 <!-- ************************** -->
 <!-- Annotation of RDF document -->
@@ -109,8 +111,8 @@
 				<res:variable><xsl:value-of select="$varname"/></res:variable>
 				<res:value>
 					<xsl:if test="exists(res:uri)"><xsl:attribute name="rdf:resource"><xsl:value-of select="res:uri"/></xsl:attribute></xsl:if>
-					<xsl:if test="exists(res:literal)"><xsl:attribute name="datatype"><xsl:value-of select="res:literal/@datatype"/></xsl:attribute><xsl:value-of select="res:literal"/></xsl:if>
 					<xsl:if test="exists(res:bnode)"><xsl:attribute name="rdf:nodeID"><xsl:value-of select="res:bnode"/></xsl:attribute></xsl:if>
+					<xsl:if test="exists(res:literal)"><xsl:attribute name="datatype"><xsl:value-of select="res:literal/@datatype"/></xsl:attribute><xsl:value-of select="res:literal"/></xsl:if>
 				</res:value>
 			</res:binding>
 			<!-- Extra binding -->
@@ -148,11 +150,11 @@
 <!-- Drop specific UI appearances -->
 <xsl:template match="rdf:RDF|res:sparql" mode="plain">
 	<xsl:choose>
-		<xsl:when test="/root/view/representation/@appearance='http://bp4mc2.org/elmo/def#HeaderAppearance'"/> <!-- CHANGED: added '/view' -->
-		<xsl:when test="/root/view/representation/@appearance='http://bp4mc2.org/elmo/def#NavbarAppearance'"/> <!-- CHANGED: added '/view' -->
-		<xsl:when test="/root/view/representation/@appearance='http://bp4mc2.org/elmo/def#NavbarSearchAppearance'"/> <!-- CHANGED: added '/view' -->
-		<xsl:when test="/root/view/representation/@appearance='http://bp4mc2.org/elmo/def#IndexAppearance'"/> <!-- CHANGED: added '/view' -->
-		<xsl:when test="/root/view/representation/@appearance='http://bp4mc2.org/elmo/def#TreeAppearance'"/> <!-- CHANGED: added '/view' -->
+		<xsl:when test="/root/view/representation[$args]/@appearance='http://bp4mc2.org/elmo/def#HeaderAppearance'"/> <!-- CHANGED: added '/view' -->
+		<xsl:when test="/root/view/representation[$args]/@appearance='http://bp4mc2.org/elmo/def#NavbarAppearance'"/> <!-- CHANGED: added '/view' -->
+		<xsl:when test="/root/view/representation[$args]/@appearance='http://bp4mc2.org/elmo/def#NavbarSearchAppearance'"/> <!-- CHANGED: added '/view' -->
+		<xsl:when test="/root/view/representation[$args]/@appearance='http://bp4mc2.org/elmo/def#IndexAppearance'"/> <!-- CHANGED: added '/view' -->
+		<xsl:when test="/root/view/representation[$args]/@appearance='http://bp4mc2.org/elmo/def#TreeAppearance'"/> <!-- CHANGED: added '/view' -->
 		<xsl:otherwise><xsl:copy-of select="."/></xsl:otherwise>
 	</xsl:choose>
 </xsl:template>
