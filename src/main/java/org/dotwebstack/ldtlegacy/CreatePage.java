@@ -138,7 +138,7 @@ public class CreatePage {
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
             throws Exception {
           XmlEngine.transform(new StreamSource(inputStream), "xsl/sparql2rdfa.xsl",
-              new StreamResult(outputStream),0);
+              new StreamResult(outputStream),1);
         }
       };
       //Add result of information product to result stream (buffered)
@@ -155,7 +155,7 @@ public class CreatePage {
 
       
       //Fetch data from all sub representations. The result will be part of the rdfData stream.
-      int index = 0;
+      int index = 1;
       for (Representation subRepresentation : representation.getSubRepresentations()) {
         addData(dataMerger, view, subRepresentation, index++);
       }
