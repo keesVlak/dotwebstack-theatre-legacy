@@ -214,8 +214,7 @@ public class CreatePage {
   private static void addAppearance(XmlMerger merger, Representation representation)
       throws IOException {
     
-    Appearance appearance = representation.getAppearance();
-    StartTerminal pipe1 = new StartTerminal(appearance) {
+    StartTerminal pipe1 = new StartTerminal(representation.getAppearance()) {
       @Override
       public void filter(Object input, InputStream inputStream, OutputStream outputStream)
           throws Exception {
@@ -231,16 +230,19 @@ public class CreatePage {
       }
     };
     //Merge with identifier of appearance, if any exists
-    String appearanceIri = representation.getIdentifier().toString();
-    if (appearance != null) {
-      appearanceIri = appearance.getIdentifier().toString();
-    }
-    Pipe pipe2 = new Pipe(appearanceIri,pipe1) {
+    Pipe pipe2 = new Pipe(representation,pipe1) {
       @Override
       public void filter(Object input, InputStream inputStream, OutputStream outputStream)
           throws Exception {
+        String representationIri = ((Representation)input).getIdentifier().toString();
+        String appearanceIri = representationIri;
+        Appearance appearance = ((Representation)input).getAppearance();
+        if (appearance != null) {
+          appearanceIri = appearance.getIdentifier().toString();
+        }
         XmlMerger.merge("appearance", outputStream, new StreamSource(new StringReader(
-            String.format("<id>%s</id>",(String)input))), new StreamSource(inputStream));
+            String.format("<app uri='%s' rep='%s'/>",appearanceIri,representationIri))),
+                new StreamSource(inputStream));
       }
     };
     //Merge

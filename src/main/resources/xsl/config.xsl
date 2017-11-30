@@ -23,8 +23,9 @@
 	<rdf:RDF>
 
 	<xsl:for-each select="appearances/appearance">
-		<xsl:variable name="appearance" select="id"/>
-		<rdf:Description rdf:about="{$appearance}">
+		<xsl:variable name="appearance" select="app/@uri"/>
+		<xsl:variable name="representation" select="app/@rep"/>
+		<rdf:Description rdf:about="{$representation}">
 			<elmo:query>INFOPROD</elmo:query>
 			<xsl:for-each select="rdf:RDF/rdf:Description[@rdf:about=$appearance]">
 				<xsl:apply-templates select="." mode="type"/>
@@ -47,7 +48,7 @@
 					</xsl:if>
 					<xsl:value-of select="elmo2:appliesTo"/>
 				</elmo:applies-to>
-				<xsl:copy-of select="rdfs:label|xhtml:stylesheet|rdf:value|xhtml:link"/>
+				<xsl:copy-of select="rdfs:label|xhtml:glossary|xhtml:stylesheet|rdf:value|xhtml:link"/>
 				<xsl:for-each select="elmo2:backmap">
 					<elmo:backmap><xsl:value-of select="."/></elmo:backmap>
 				</xsl:for-each>
@@ -55,13 +56,16 @@
 					<elmo:index><xsl:value-of select="."/></elmo:index>
 				</xsl:for-each>
 				<xsl:for-each select="elmo2:appearance">
-					<elmo:appearance rdf:resource="{@rdf:resource}"/>
-				</xsl:for-each>
-				<xsl:for-each select="xhtml:glossary">
-					<elmo:glossary rdf:resource="{@rdf:resource}"/>
+					<elmo:appearance rdf:resource="http://bp4mc2.org/elmo/def#{substring-after(@rdf:resource,'#')}"/>
 				</xsl:for-each>
 				<xsl:for-each select="elmo2:name">
 					<elmo:name><xsl:value-of select="."/></elmo:name>
+				</xsl:for-each>
+				<xsl:for-each select="elmo2:layer">
+					<elmo:layer><xsl:value-of select="."/></elmo:layer>
+				</xsl:for-each>
+				<xsl:for-each select="elmo2:service">
+					<elmo:service><xsl:value-of select="."/></elmo:service>
 				</xsl:for-each>
 			</rdf:Description>
 		</xsl:for-each>
