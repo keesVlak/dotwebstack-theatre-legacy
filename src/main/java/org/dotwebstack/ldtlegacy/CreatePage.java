@@ -155,8 +155,9 @@ public class CreatePage {
 
       
       //Fetch data from all sub representations. The result will be part of the rdfData stream.
+      int index = 0;
       for (Representation subRepresentation : representation.getSubRepresentations()) {
-        addData(dataMerger, view, subRepresentation);
+        addData(dataMerger, view, subRepresentation, index++);
       }
       
       //Finish merging
@@ -254,8 +255,8 @@ public class CreatePage {
     pipe3.start();
   }
   
-  private static void addData(XmlMerger merger, OutputStream view, Representation representation)
-      throws IOException {
+  private static void addData(XmlMerger merger, OutputStream view, Representation representation,
+      int index) throws IOException {
 
     //SubRepresentation is present, so start adding the subrepresentation
     StartTerminal pipe1 = new StartTerminal(representation) {
@@ -277,12 +278,12 @@ public class CreatePage {
     };
     //original sparql2rdfa doesn't expect a view, but a representation.
     //In this case, we supply an index to the stylesheet
-    Pipe pipe3 = new Pipe(pipe2) {
+    Pipe pipe3 = new Pipe(index,pipe2) {
       @Override
       public void filter(Object input, InputStream inputStream, OutputStream outputStream)
           throws Exception {
         XmlEngine.transform(new StreamSource(inputStream), "xsl/sparql2rdfa.xsl",
-            new StreamResult(outputStream),1);
+            new StreamResult(outputStream),(int)input);
       }
     };
     //Add result of information product to result stream (buffered)
