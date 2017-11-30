@@ -1,9 +1,17 @@
 @prefix elmo: <http://dotwebstack.org/def/elmo#> .
+@prefix elmo-rt: <http://dotwebstack.org/def/elmo/result-type/>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix config: <http://dotwebstack.org/configuration/>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
 
 GRAPH config:Theatre {
+
+# ==========================
+#
+# STAGE and BACKENDS
+#
+# ==========================
 
   config:Stage a elmo:Stage;
     elmo:site config:Site;
@@ -14,17 +22,87 @@ GRAPH config:Theatre {
     elmo:endpoint "http://dbpedia.org/sparql"^^xsd:anyURI;
   .
   
+  config:LOVBackend a elmo:SparqlBackend;
+    elmo:endpoint "http://lov.okfn.org/dataset/lov/sparql"^^xsd:anyURI;
+  .
+
+# ==========================
+#
+# Menu
+#
+# ==========================
+
   config:Menu a elmo:Representation;
     elmo:stage config:Stage;
     elmo:informationProduct config:MenuData;
     elmo:appearance config:MenuAppearance;
   .
+  config:MenuAppearance a elmo:NavbarSearchAppearance
+  .
+  config:MenuData a elmo:InformationProduct;
+    elmo:backend config:DBPediaBackend;
+    elmo:query """
+      prefix elmo1: <http://bp4mc2.org/elmo/def#>
+      prefix xhtml: <http://www.w3.org/1999/xhtml/vocab#>
+      CONSTRUCT {
+        [] rdfs:label "Demo";
+          xhtml:search "search";
+          elmo1:data [elmo1:index "1"; rdfs:label "Menu 1"]
+        .
+      }
+      WHERE {}
+    """;
+  .
+
+# ==========================
+#
+# Footer
+#
+# ==========================
 
   config:Footer a elmo:Representation;
     elmo:stage config:Stage;
     elmo:informationProduct config:FooterData;
     elmo:appearance config:FooterAppearance;
   .
+  config:FooterAppearance a elmo:FooterAppearance;
+  .
+  config:FooterData a elmo:InformationProduct;
+    elmo:backend config:DBPediaBackend;
+    elmo:query """
+      prefix elmo1: <http://bp4mc2.org/elmo/def#>
+      CONSTRUCT {
+        [] elmo1:html '''<div class="row">
+			<div class="col-sm-4">
+				<h4>Links</h4>
+				<ul class="list-unstyled">
+					<li>
+						<a href="https://github.com/architolk/linked-data-theatre">Github codebase</a>
+					</li>
+					<li>
+						<a href="https://github.com/architolk/linked-data-theatre/wiki">Wiki documentation</a>
+					</li>
+				</ul>
+			</div>
+			<div class="col-sm-4">
+				<h4>Demo configuration</h4>
+				<p>This demo configuration is designed to function as a regression test. It should depict all configuration options of the LDT.</p>
+			</div>
+			<div class="col-sm-4">
+				<h4>License</h4>
+				<p>GPL 3.0 / CC-BY-SA</p>
+			</div>
+		</div>'''^^rdf:HTML
+      }
+      WHERE {}
+    """;
+  .
+
+# ==========================
+#
+# Homepage
+#
+# ==========================
 
   config:Homepage a elmo:Representation;
     elmo:urlPattern "";
@@ -60,60 +138,48 @@ GRAPH config:Theatre {
     """
   .
 
-  config:MenuAppearance a elmo:NavbarSearchAppearance
+# ==========================
+#
+# Generic resource (assuming dbpedia)
+#
+# ==========================
+
+  config:DBPediaResource a elmo:Representation;
+    elmo:urlPattern "/resource";
+    elmo:stage config:Stage;
+    elmo:informationProduct config:DBPediaResourceData;
   .
-  config:MenuData a elmo:InformationProduct;
+  config:SubjectParameter a elmo:TermFilter;
+    elmo:name "subject";
+    elmo:shape [
+      sh:nodeKind sh:Iri;
+    ];
+  .
+  config:DBPediaResourceData a elmo:InformationProduct;
     elmo:backend config:DBPediaBackend;
+    elmo:requiredParameter config:SubjectParameter;
     elmo:query """
-      prefix elmo1: <http://bp4mc2.org/elmo/def#>
       CONSTRUCT {
-        [] rdfs:label "Demo";
-          elmo1:data [elmo1:index "1"; rdfs:label "Menu 1"]
-        .
+        <${subject}> ?p ?o
       }
-      WHERE {}
+      WHERE {
+        <${subject}> ?p ?o
+        FILTER (?p=rdf:type || ?p=rdfs:label)
+      }
     """;
   .
 
-  config:FooterAppearance a elmo:FooterAppearance;
-  .
-  config:FooterData a elmo:InformationProduct;
-    elmo:backend config:DBPediaBackend;
-    elmo:query """
-      prefix elmo1: <http://bp4mc2.org/elmo/def#>
-      CONSTRUCT {
-        [] elmo1:html '''<div class="row">
-			<div class="col-sm-4">
-				<h4>Links</h4>
-				<ul class="list-unstyled">
-					<li>
-						<a href="https://github.com/architolk/linked-data-theatre">Github codebase</a>
-					</li>
-					<li>
-						<a href="https://github.com/architolk/linked-data-theatre/wiki">Wiki documentation</a>
-					</li>
-				</ul>
-			</div>
-			<div class="col-sm-4">
-				<h4>Demo configuration</h4>
-				<p>This demo configuration is designed to function as a regression test. It should depict all configuration options of the LDT.</p>
-			</div>
-			<div class="col-sm-4">
-				<h4>License</h4>
-				<p>GPL 3.0 / CC-BY-SA</p>
-			</div>
-		</div>'''^^rdf:HTML
-      }
-      WHERE {}
-    """;
-  .
+# ==========================
+#
+# Amersfoort (with appearance, CONSTRUCT = ResourceAppearance)
+#
+# ==========================
 
   config:Amersfoort a elmo:Representation;
     elmo:urlPattern "/demo/amersfoort";
     elmo:stage config:Stage;
     elmo:informationProduct config:AmersfoortData
   .
-  
   config:AmersfoortData a elmo:InformationProduct;
     elmo:backend config:DBPediaBackend;
     elmo:query """
@@ -129,5 +195,96 @@ GRAPH config:Theatre {
     """;
   .
 
-}
+# ==========================
+#
+# Search (without appearance, SELECT = TableAppearance)
+#
+# ==========================
 
+  config:Search a elmo:Representation;
+    elmo:urlPattern "/search";
+    elmo:stage config:Stage;
+    elmo:contains config:Menu;
+    elmo:informationProduct config:SearchData;
+  .
+  config:TermParameter a elmo:TermFilter;
+    elmo:name "term";
+    elmo:shape [
+      sh:datatype xsd:string;
+    ];
+  .
+  config:SearchData a elmo:InformationProduct;
+    elmo:backend config:LOVBackend;
+    elmo:requiredParameter config:TermParameter;
+    elmo:resultType elmo-rt:Tuple;
+    elmo:query """
+      PREFIX vann: <http://purl.org/vocab/vann/>
+      SELECT *
+      WHERE {
+        ?vocabURI vann:preferredNamespacePrefix ?term.
+      }
+      LIMIT 10
+    """;
+  .
+
+# ==========================
+#
+# Places (menu, tree, table, footer)
+#
+# ==========================
+
+  config:Places a elmo:Representation;
+    elmo:urlPattern "/places";
+    elmo:stage config:Stage;
+    elmo:contains config:PlacesTree;
+    elmo:contains config:Menu;
+    elmo:contains config:Footer;
+    elmo:informationProduct config:PlacesData;
+  .
+  config:PlacesData a elmo:InformationProduct;
+    elmo:backend config:DBPediaBackend;
+    elmo:resultType elmo-rt:Tuple;
+    elmo:query """
+      PREFIX dbr: <http://dbpedia.org/resource/>
+      PREFIX dbo: <http://dbpedia.org/ontology/>
+      SELECT *
+      WHERE {
+        ?province dbo:type dbr:Provinces_of_the_Netherlands.
+        ?province rdfs:label ?province_label
+        FILTER (lang(?province_label)="nl")
+      }
+    """
+  .
+  
+  #
+  # Places tree
+  #
+  config:PlacesTree a elmo:Representation;
+    elmo:stage config:Stage;
+    elmo:appearance config:PlacesTreeAppearance;
+    elmo:informationProduct config:PlacesTreeData
+  .
+  config:PlacesTreeAppearance a elmo:TreeAppearance
+  .
+  config:PlacesTreeData a elmo:InformationProduct;
+    elmo:backend config:DBPediaBackend;
+    elmo:query """
+      PREFIX dbr: <http://dbpedia.org/resource/>
+      PREFIX dbo: <http://dbpedia.org/ontology/>
+      CONSTRUCT {
+        ?place dbo:isPartOf ?province.
+        ?place rdfs:label ?place_label.
+        ?province rdfs:label ?province_label.
+      }
+      WHERE {
+        ?place dbo:country dbr:Netherlands.
+        ?place rdfs:label ?place_label.
+        ?place dbo:isPartOf ?province.
+        ?province rdfs:label ?province_label.
+        FILTER (lang(?place_label)="nl")
+        FILTER (lang(?province_label)="nl")
+      }
+    """;
+  .
+  
+}
