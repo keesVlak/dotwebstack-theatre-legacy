@@ -42,8 +42,8 @@
 		<xsl:for-each select="appearances/appearance/rdf:RDF/rdf:Description[exists(elmo2:appliesTo)]">
 			<rdf:Description rdf:nodeID="{@rdf:nodeID}">
 				<elmo:applies-to>
-					<xsl:if test="@rdf:resource!=''">
-						<xsl:attribute name="rdf:resource"><xsl:value-of select="@rdf:resource"/></xsl:attribute>
+					<xsl:if test="elmo2:appliesTo/@rdf:resource!=''">
+						<xsl:attribute name="rdf:resource"><xsl:value-of select="elmo2:appliesTo/@rdf:resource"/></xsl:attribute>
 					</xsl:if>
 					<xsl:value-of select="elmo2:appliesTo"/>
 				</elmo:applies-to>
