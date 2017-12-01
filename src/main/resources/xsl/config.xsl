@@ -5,6 +5,7 @@
 	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
 	xmlns:elmo="http://bp4mc2.org/elmo/def#"
 	xmlns:elmo2="http://dotwebstack.org/def/elmo#"
+	xmlns:xhtml="http://www.w3.org/1999/xhtml/vocab#"
 >
 
 <xsl:output method="xml" indent="yes"/>
@@ -20,27 +21,55 @@
 
 <xsl:template match="/">
 	<rdf:RDF>
-  
-    <xsl:for-each select="appearances/appearance">
-      <xsl:variable name="appearance" select="id"/>
-      <rdf:Description rdf:about="{$appearance}">
-        <elmo:query>INFOPROD</elmo:query>
-        <xsl:for-each select="rdf:RDF/rdf:Description[@rdf:about=$appearance]">
-          <xsl:apply-templates select="." mode="type"/>
-          <xsl:for-each select="elmo2:fragment">
-            <elmo:fragment rdf:nodeID="{@rdf:nodeID}"/>
-          </xsl:for-each>
-        </xsl:for-each>
-      </rdf:Description>
-    </xsl:for-each>
-    
+
+	<xsl:for-each select="appearances/appearance">
+		<xsl:variable name="appearance" select="app/@uri"/>
+		<xsl:variable name="representation" select="app/@rep"/>
+		<rdf:Description rdf:about="{$representation}">
+			<elmo:query>INFOPROD</elmo:query>
+			<xsl:for-each select="rdf:RDF/rdf:Description[@rdf:about=$appearance]">
+				<xsl:apply-templates select="." mode="type"/>
+				<xsl:for-each select="elmo2:index">
+					<elmo:index><xsl:value-of select="."/></elmo:index>
+				</xsl:for-each>
+				<xsl:copy-of select="xhtml:stylesheet"/>
+				<xsl:for-each select="elmo2:fragment">
+					<elmo:fragment rdf:nodeID="{@rdf:nodeID}"/>
+				</xsl:for-each>
+			</xsl:for-each>
+		</rdf:Description>
+	</xsl:for-each>
+
 		<xsl:for-each select="appearances/appearance/rdf:RDF/rdf:Description[exists(elmo2:appliesTo)]">
 			<rdf:Description rdf:nodeID="{@rdf:nodeID}">
-				<elmo:applies-to><xsl:value-of select="elmo2:appliesTo"/></elmo:applies-to>
-				<xsl:copy-of select="rdfs:label"/>
+				<elmo:applies-to>
+					<xsl:if test="elmo2:appliesTo/@rdf:resource!=''">
+						<xsl:attribute name="rdf:resource"><xsl:value-of select="elmo2:appliesTo/@rdf:resource"/></xsl:attribute>
+					</xsl:if>
+					<xsl:value-of select="elmo2:appliesTo"/>
+				</elmo:applies-to>
+				<xsl:copy-of select="rdfs:label|xhtml:glossary|xhtml:stylesheet|rdf:value|xhtml:link"/>
+				<xsl:for-each select="elmo2:backmap">
+					<elmo:backmap><xsl:value-of select="."/></elmo:backmap>
+				</xsl:for-each>
+				<xsl:for-each select="elmo2:index">
+					<elmo:index><xsl:value-of select="."/></elmo:index>
+				</xsl:for-each>
+				<xsl:for-each select="elmo2:appearance">
+					<elmo:appearance rdf:resource="http://bp4mc2.org/elmo/def#{substring-after(@rdf:resource,'#')}"/>
+				</xsl:for-each>
+				<xsl:for-each select="elmo2:name">
+					<elmo:name><xsl:value-of select="."/></elmo:name>
+				</xsl:for-each>
+				<xsl:for-each select="elmo2:layer">
+					<elmo:layer><xsl:value-of select="."/></elmo:layer>
+				</xsl:for-each>
+				<xsl:for-each select="elmo2:service">
+					<elmo:service><xsl:value-of select="."/></elmo:service>
+				</xsl:for-each>
 			</rdf:Description>
 		</xsl:for-each>
-    
+
 	</rdf:RDF>
 </xsl:template>
 

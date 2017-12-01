@@ -4,6 +4,8 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix config: <http://dotwebstack.org/configuration/>.
 @prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix dbo: <http://dbpedia.org/ontology/>.
+@prefix xhtml: <http://www.w3.org/1999/xhtml/vocab#>.
 
 GRAPH config:Theatre {
 
@@ -100,6 +102,31 @@ GRAPH config:Theatre {
 
 # ==========================
 #
+# Format index
+#
+# ==========================
+
+  config:FormatIndex a elmo:Representation;
+    elmo:stage config:Stage;
+    elmo:informationProduct config:FormatIndexData;
+    elmo:appearance config:FormatIndexAppearance;
+  .
+  config:FormatIndexAppearance a elmo:IndexAppearance;
+    elmo:index "1"
+  .
+  config:FormatIndexData a elmo:InformationProduct;
+    elmo:backend config:DBPediaBackend;
+    elmo:query """
+      CONSTRUCT {
+        [] rdfs:label "a|b|c";
+           rdf:value "x|y|z"
+      }
+      WHERE {}
+    """;
+  .
+
+# ==========================
+#
 # Homepage
 #
 # ==========================
@@ -178,11 +205,40 @@ GRAPH config:Theatre {
   config:Amersfoort a elmo:Representation;
     elmo:urlPattern "/demo/amersfoort";
     elmo:stage config:Stage;
+    elmo:contains config:Menu;
+    elmo:contains config:FormatIndex;
+    elmo:contains config:Glossary;
+    elmo:appearance config:AmersfoortAppearance;
     elmo:informationProduct config:AmersfoortData
+  .
+  config:AmersfoortAppearance a elmo:Appearance;
+    elmo:fragment [
+      elmo:appliesTo dbo:thumbnail;
+      rdfs:label "Image";
+      elmo:index "1";
+      elmo:appearance elmo:ImageAppearance;
+    ];
+    elmo:fragment [
+      elmo:appliesTo rdfs:label;
+      rdfs:label "City name";
+      elmo:index "2";
+    ];
+    elmo:fragment [
+      elmo:appliesTo dbo:abstract;
+      xhtml:glossary config:Glossary;
+      elmo:index "3";
+    ];
+    elmo:fragment [
+      elmo:appliesTo rdf:type;
+      rdfs:label "Resource type";
+      xhtml:link "/demo/resource";
+      elmo:index "4";
+    ];
   .
   config:AmersfoortData a elmo:InformationProduct;
     elmo:backend config:DBPediaBackend;
     elmo:query """
+      PREFIX dbo: <http://dbpedia.org/ontology/>
       CONSTRUCT {
         <http://dbpedia.org/resource/Amersfoort> ?p ?o
       }
@@ -190,9 +246,30 @@ GRAPH config:Theatre {
         <http://dbpedia.org/resource/Amersfoort> ?p ?o.
         FILTER (?p = rdfs:label
              || ?p = rdf:type
+             || ?p = dbo:abstract
+             || ?p = dbo:thumbnail
         )
+        FILTER (IsIri(?o) || lang(?o)="en")
       }
     """;
+  .
+  
+  config:Glossary a elmo:Representation;
+    elmo:stage config:Stage;
+    elmo:appearance config:GlossaryAppearance;
+    elmo:informationProduct config:GlossaryData;
+  .
+  config:GlossaryAppearance a elmo:HiddenAppearance;
+  .
+  config:GlossaryData a elmo:InformationProduct;
+    elmo:backend config:DBPediaBackend;
+    elmo:query """
+      prefix elmo1: <http://bp4mc2.org/elmo/def#>
+      CONSTRUCT {
+        <http://dbpedia.org/resource/Utrecht> elmo1:name "province of Utrecht"@en
+      }
+      WHERE {}
+    """
   .
 
 # ==========================
@@ -234,7 +311,7 @@ GRAPH config:Theatre {
 # ==========================
 
   config:Places a elmo:Representation;
-    elmo:urlPattern "/places";
+    elmo:urlPattern "/demo/places";
     elmo:stage config:Stage;
     elmo:contains config:PlacesTree;
     elmo:contains config:Menu;

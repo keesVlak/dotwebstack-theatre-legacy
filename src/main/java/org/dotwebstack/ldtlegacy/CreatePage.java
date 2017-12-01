@@ -138,7 +138,7 @@ public class CreatePage {
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
             throws Exception {
           XmlEngine.transform(new StreamSource(inputStream), "xsl/sparql2rdfa.xsl",
-              new StreamResult(outputStream),0);
+              new StreamResult(outputStream),1);
         }
       };
       //Add result of information product to result stream (buffered)
@@ -155,8 +155,9 @@ public class CreatePage {
 
       
       //Fetch data from all sub representations. The result will be part of the rdfData stream.
+      int index = 1;
       for (Representation subRepresentation : representation.getSubRepresentations()) {
-        addData(dataMerger, view, subRepresentation);
+        addData(dataMerger, view, subRepresentation, index++);
       }
       
       //Finish merging
@@ -213,8 +214,7 @@ public class CreatePage {
   private static void addAppearance(XmlMerger merger, Representation representation)
       throws IOException {
     
-    Appearance appearance = representation.getAppearance();
-    StartTerminal pipe1 = new StartTerminal(appearance) {
+    StartTerminal pipe1 = new StartTerminal(representation.getAppearance()) {
       @Override
       public void filter(Object input, InputStream inputStream, OutputStream outputStream)
           throws Exception {
@@ -230,16 +230,19 @@ public class CreatePage {
       }
     };
     //Merge with identifier of appearance, if any exists
-    String appearanceIri = representation.getIdentifier().toString();
-    if (appearance != null) {
-      appearanceIri = appearance.getIdentifier().toString();
-    }
-    Pipe pipe2 = new Pipe(appearanceIri,pipe1) {
+    Pipe pipe2 = new Pipe(representation,pipe1) {
       @Override
       public void filter(Object input, InputStream inputStream, OutputStream outputStream)
           throws Exception {
+        String representationIri = ((Representation)input).getIdentifier().toString();
+        String appearanceIri = representationIri;
+        Appearance appearance = ((Representation)input).getAppearance();
+        if (appearance != null) {
+          appearanceIri = appearance.getIdentifier().toString();
+        }
         XmlMerger.merge("appearance", outputStream, new StreamSource(new StringReader(
-            String.format("<id>%s</id>",(String)input))), new StreamSource(inputStream));
+            String.format("<app uri='%s' rep='%s'/>",appearanceIri,representationIri))),
+                new StreamSource(inputStream));
       }
     };
     //Merge
@@ -254,8 +257,8 @@ public class CreatePage {
     pipe3.start();
   }
   
-  private static void addData(XmlMerger merger, OutputStream view, Representation representation)
-      throws IOException {
+  private static void addData(XmlMerger merger, OutputStream view, Representation representation,
+      int index) throws IOException {
 
     //SubRepresentation is present, so start adding the subrepresentation
     StartTerminal pipe1 = new StartTerminal(representation) {
@@ -277,12 +280,12 @@ public class CreatePage {
     };
     //original sparql2rdfa doesn't expect a view, but a representation.
     //In this case, we supply an index to the stylesheet
-    Pipe pipe3 = new Pipe(pipe2) {
+    Pipe pipe3 = new Pipe(index,pipe2) {
       @Override
       public void filter(Object input, InputStream inputStream, OutputStream outputStream)
           throws Exception {
         XmlEngine.transform(new StreamSource(inputStream), "xsl/sparql2rdfa.xsl",
-            new StreamResult(outputStream),1);
+            new StreamResult(outputStream),(int)input);
       }
     };
     //Add result of information product to result stream (buffered)
