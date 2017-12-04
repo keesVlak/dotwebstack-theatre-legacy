@@ -284,6 +284,18 @@ GRAPH config:Theatre {
     elmo:contains config:Menu;
     elmo:informationProduct config:SearchData;
   .
+  config:SearchInPath a elmo:Representation;
+    elmo:urlPattern "/search/{term}";
+    elmo:parameterMapper [
+      a elmo:UriParameterMapper;
+      elmo:pattern "/search/{term}";
+      elmo:template "{term}";
+      elmo:targetParameter config:TermParameter;
+    ];
+    elmo:stage config:Stage;
+    elmo:contains config:Menu;
+    elmo:informationProduct config:SearchData;
+  .
   config:TermParameter a elmo:TermFilter;
     elmo:name "term";
     elmo:shape [
