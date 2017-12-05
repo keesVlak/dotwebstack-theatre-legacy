@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.dotwebstack.framework.frontend.ld.appearance.Appearance;
@@ -39,7 +40,8 @@ public class CreatePage {
           QueryResults.report(((GraphEntity)input).getQueryResult(),new RDFXMLWriter(outputStream));
         }
       };
-      write(outputStream,dataPipe,graphEntity.getRepresentation());
+      write(outputStream,dataPipe,graphEntity.getRepresentation(),
+          ((LegacyGraphEntity)graphEntity).getContainerRequestContext());
 
     } catch (Exception ex) {
       throw new IOException(ex);
@@ -58,17 +60,24 @@ public class CreatePage {
               new SPARQLResultsXMLWriter(outputStream));
         }
       };
-      write(outputStream,dataPipe,tupleEntity.getRepresentation());
+      write(outputStream,dataPipe,tupleEntity.getRepresentation(),
+          ((LegacyTupleEntity)tupleEntity).getContainerRequestContext());
 
     } catch (Exception ex) {
       throw new IOException(ex);
     }
   }
 
-  public static void write(OutputStream outputStream, Pipe dataPipe, Representation representation)
-      throws IOException {
+  public static void write(OutputStream outputStream, Pipe dataPipe, Representation representation,
+      ContainerRequestContext containerRequestContext) throws IOException {
 
     try {
+      if (containerRequestContext != null) {
+        System.out.println("================");
+        System.out.println(containerRequestContext.getUriInfo().getRequestUri());
+        System.out.println("================");
+      }
+      
       //Construct config pipe
       //Get XML configuration according to elmo2 vocabulary
 
