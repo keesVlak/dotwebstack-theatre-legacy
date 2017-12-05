@@ -8,8 +8,6 @@ import org.eclipse.rdf4j.query.GraphQueryResult;
 
 public class LegacyGraphEntity extends GraphEntity {
   
-  private GraphEntity graphEntity;
-  
   private ContainerRequestContext containerRequestContext;
   
   public LegacyGraphEntity(GraphEntity graphEntity,

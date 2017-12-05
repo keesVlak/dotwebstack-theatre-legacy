@@ -8,8 +8,6 @@ import org.eclipse.rdf4j.query.GraphQueryResult;
 
 public class LegacyTupleEntity extends TupleEntity {
   
-  private TupleEntity tupleEntity;
-  
   private ContainerRequestContext containerRequestContext;
   
   public LegacyTupleEntity(TupleEntity tupleEntity,
