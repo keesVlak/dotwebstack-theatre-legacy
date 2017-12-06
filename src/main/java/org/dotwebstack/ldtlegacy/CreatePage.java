@@ -26,9 +26,6 @@ import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 
 public class CreatePage {
 
-  private static final String CONTEXT = 
-      "<context staticroot='/assets'><title>LDT 2.0 alfa</title></context>";
-
   public static void write(OutputStream outputStream, GraphEntity graphEntity) throws IOException {
 
     try {
@@ -72,12 +69,6 @@ public class CreatePage {
       ContainerRequestContext containerRequestContext) throws IOException {
 
     try {
-      if (containerRequestContext != null) {
-        System.out.println("================");
-        System.out.println(containerRequestContext.getUriInfo().getRequestUri());
-        System.out.println("================");
-      }
-      
       //Construct config pipe
       //Get XML configuration according to elmo2 vocabulary
 
@@ -105,11 +96,13 @@ public class CreatePage {
         }
       };
       //Merge configuration result with context (empty at this moment)
+      Context context = new Context(containerRequestContext);
       Pipe configPipe2 = new Pipe(configPipe1) {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
             throws Exception {
-          XmlMerger.merge("root", outputStream, new StreamSource(inputStream));
+          XmlMerger.merge("root", outputStream, new StreamSource(
+              new StringReader(context.getContextXml())), new StreamSource(inputStream));
         }
       };
       //rdf2view.xsl (create configuration XML from RDF). Result is used more than ones, so store
@@ -180,9 +173,10 @@ public class CreatePage {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
             throws Exception {
-          XmlMerger.merge("root", outputStream, new StreamSource(new StringReader(CONTEXT)), new
-              StreamSource(new ByteArrayInputStream(((ByteArrayOutputStream)input).toByteArray())),
-                  new StreamSource(inputStream));
+          XmlMerger.merge("root", outputStream,new StreamSource(
+              new StringReader(context.getContextXml())), new StreamSource(
+                new ByteArrayInputStream(((ByteArrayOutputStream)input).toByteArray())),
+                    new StreamSource(inputStream));
         }
       };
       //rdf2rdfa.xsl (create RDF annotated with UI declarations)
