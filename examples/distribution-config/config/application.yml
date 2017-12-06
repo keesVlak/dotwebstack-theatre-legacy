@@ -4,7 +4,7 @@ spring:
   jersey:
     type: filter
   resources:
-    static-locations: classpath:/static/
+    static-locations: file:./config/static/,classpath:/static/
 
 logging.level:
   org.dotwebstack.framework: DEBUG
