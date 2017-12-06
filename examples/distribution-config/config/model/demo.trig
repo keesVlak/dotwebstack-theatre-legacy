@@ -6,6 +6,7 @@
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix dbo: <http://dbpedia.org/ontology/>.
 @prefix xhtml: <http://www.w3.org/1999/xhtml/vocab#>.
+@prefix http: <http://www.w3.org/2011/http#>.
 
 GRAPH config:Theatre {
 
@@ -286,15 +287,16 @@ GRAPH config:Theatre {
   .
   config:SearchInPath a elmo:Representation;
     elmo:urlPattern "/search/{term}";
-    elmo:parameterMapper [
-      a elmo:UriParameterMapper;
-      elmo:pattern "/search/{term}";
-      elmo:template "{term}";
-      elmo:targetParameter config:TermParameter;
-    ];
+    elmo:parameterMapper config:SubjectFromUrl;
     elmo:stage config:Stage;
     elmo:contains config:Menu;
     elmo:informationProduct config:SearchData;
+  .
+  config:SubjectFromUrl a elmo:UriParameterMapper;
+    elmo:source http:requestURI;
+    elmo:pattern "http://{domain}/search/{term}";
+    elmo:template "{term}";
+    elmo:target config:TermParameter;
   .
   config:TermParameter a elmo:TermFilter;
     elmo:name "term";
