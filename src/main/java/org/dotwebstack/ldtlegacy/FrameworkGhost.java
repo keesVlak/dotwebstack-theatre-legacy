@@ -2,12 +2,21 @@ package org.dotwebstack.ldtlegacy;
 
 import com.google.common.collect.ImmutableMap;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import lombok.NonNull;
 import org.dotwebstack.framework.frontend.ld.representation.Representation;
+import org.dotwebstack.framework.informationproduct.InformationProduct;
+import org.dotwebstack.framework.param.Parameter;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
+
+import javax.ws.rs.container.ContainerRequestContext;
 
 /********
  FrameworkGhost is a class that contains functionality that could be part of the framework.
@@ -20,12 +29,12 @@ import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 
 public class FrameworkGhost {
 
-  public static Object fetchInformationProductData(Representation representation) {
-    return representation.getInformationProduct().getResult(ImmutableMap.of());
+  public static Object fetchInformationProductData(Representation representation, Map<String, Object> parameterValues) {
+    return representation.getInformationProduct().getResult(parameterValues);
   }
   
-  public static void getXml(Representation representation, OutputStream outputStream) {
-    Object result = representation.getInformationProduct().getResult(ImmutableMap.of());
+  public static void getXml(Representation representation, Map<String, Object> parameterValues, OutputStream outputStream) {
+    Object result = representation.getInformationProduct().getResult(parameterValues);
     if (result instanceof GraphQueryResult) {
       QueryResults.report((GraphQueryResult)result,new RDFXMLWriter(outputStream));
     }

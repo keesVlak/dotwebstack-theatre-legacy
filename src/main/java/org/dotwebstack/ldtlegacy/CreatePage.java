@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -13,6 +16,7 @@ import org.dotwebstack.framework.frontend.ld.appearance.Appearance;
 import org.dotwebstack.framework.frontend.ld.entity.GraphEntity;
 import org.dotwebstack.framework.frontend.ld.entity.TupleEntity;
 import org.dotwebstack.framework.frontend.ld.representation.Representation;
+import org.dotwebstack.framework.param.Parameter;
 import org.dotwebstack.ldtlegacy.pipe.EndTerminal;
 import org.dotwebstack.ldtlegacy.pipe.Pipe;
 import org.dotwebstack.ldtlegacy.pipe.StartTerminal;
@@ -23,8 +27,13 @@ import org.eclipse.rdf4j.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CreatePage {
+
+  private static final Logger LOG = LoggerFactory.getLogger(CreatePage.class);
 
   public static void write(OutputStream outputStream, GraphEntity graphEntity) throws IOException {
 
@@ -155,11 +164,21 @@ public class CreatePage {
       //Start the datapipe
       dataPipe3.start();
 
-      
+      // get parameters
+      Map<String, Object> parameterValues = new HashMap<>();
+      containerRequestContext.getUriInfo().getQueryParameters().forEach((name, value)-> {
+        if (!value.isEmpty()) {
+          parameterValues.put(name, value.get(0));
+          LOG.info("Set request parameter {}: {}", name, value.get(0));
+        }
+      });
+      representation.getParametersMappers().forEach(
+              parameterMapper -> parameterValues.putAll(parameterMapper.map(containerRequestContext)));
+
       //Fetch data from all sub representations. The result will be part of the rdfData stream.
       int index = 1;
       for (Representation subRepresentation : representation.getSubRepresentations()) {
-        addData(dataMerger, view, subRepresentation, index++);
+        addData(dataMerger, view, subRepresentation, parameterValues, index++);
       }
       
       //Finish merging
@@ -261,7 +280,7 @@ public class CreatePage {
   }
   
   private static void addData(XmlMerger merger, OutputStream view, Representation representation,
-      int index) throws IOException {
+                              Map<String, Object> parameterValues, int index) throws IOException {
 
     //SubRepresentation is present, so start adding the subrepresentation
     StartTerminal pipe1 = new StartTerminal(representation) {
@@ -269,7 +288,7 @@ public class CreatePage {
       public void filter(Object input, InputStream inputStream, OutputStream outputStream)
           throws Exception {
         //The data of the subrepresentation isn't available yet, so we need to fetch it...
-        FrameworkGhost.getXml((Representation)input,outputStream);
+        FrameworkGhost.getXml((Representation)input, parameterValues, outputStream);
       }
     };
     //Transform from sparql result to rdf (cleaned)
