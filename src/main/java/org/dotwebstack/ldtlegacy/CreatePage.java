@@ -166,19 +166,18 @@ public class CreatePage {
 
       // get parameters
       Map<String, Object> parameterValues = new HashMap<>();
-      containerRequestContext.getUriInfo().getQueryParameters().forEach((name, value)-> {
+      containerRequestContext.getUriInfo().getQueryParameters().forEach((name, value) -> {
         if (!value.isEmpty()) {
           parameterValues.put(name, value.get(0));
           LOG.info("Set request parameter {}: {}", name, value.get(0));
         }
       });
-      representation.getParametersMappers().forEach(
-              parameterMapper -> parameterValues.putAll(parameterMapper.map(containerRequestContext)));
 
       //Fetch data from all sub representations. The result will be part of the rdfData stream.
       int index = 1;
       for (Representation subRepresentation : representation.getSubRepresentations()) {
-        addData(dataMerger, view, subRepresentation, parameterValues, index++);
+        addData(dataMerger, view, subRepresentation, parameterValues, index++,
+                containerRequestContext);
       }
       
       //Finish merging
@@ -280,7 +279,8 @@ public class CreatePage {
   }
   
   private static void addData(XmlMerger merger, OutputStream view, Representation representation,
-                              Map<String, Object> parameterValues, int index) throws IOException {
+                              Map<String, Object> parameterValues, int index,
+                              ContainerRequestContext containerRequestContext) throws IOException {
 
     //SubRepresentation is present, so start adding the subrepresentation
     StartTerminal pipe1 = new StartTerminal(representation) {
@@ -288,7 +288,8 @@ public class CreatePage {
       public void filter(Object input, InputStream inputStream, OutputStream outputStream)
           throws Exception {
         //The data of the subrepresentation isn't available yet, so we need to fetch it...
-        FrameworkGhost.getXml((Representation)input, parameterValues, outputStream);
+        FrameworkGhost.getXml((Representation)input, parameterValues, outputStream,
+                containerRequestContext);
       }
     };
     //Transform from sparql result to rdf (cleaned)

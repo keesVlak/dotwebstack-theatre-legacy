@@ -1,22 +1,15 @@
 package org.dotwebstack.ldtlegacy;
 
-import com.google.common.collect.ImmutableMap;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-
-import lombok.NonNull;
+import javax.ws.rs.container.ContainerRequestContext;
 import org.dotwebstack.framework.frontend.ld.representation.Representation;
-import org.dotwebstack.framework.informationproduct.InformationProduct;
-import org.dotwebstack.framework.param.Parameter;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 
-import javax.ws.rs.container.ContainerRequestContext;
 
 /********
  FrameworkGhost is a class that contains functionality that could be part of the framework.
@@ -29,11 +22,21 @@ import javax.ws.rs.container.ContainerRequestContext;
 
 public class FrameworkGhost {
 
-  public static Object fetchInformationProductData(Representation representation, Map<String, Object> parameterValues) {
+  public static Object fetchInformationProductData(Representation representation,
+                                                   Map<String, Object> parameterValues,
+                                                   ContainerRequestContext context) {
+    representation.getParametersMappers().forEach(parameterMapper ->
+        parameterValues.putAll(parameterMapper.map(context)));
+
     return representation.getInformationProduct().getResult(parameterValues);
   }
   
-  public static void getXml(Representation representation, Map<String, Object> parameterValues, OutputStream outputStream) {
+  public static void getXml(Representation representation, Map<String, Object> parameterValues,
+                            OutputStream outputStream,
+                            ContainerRequestContext containerRequestContext) {
+    representation.getParametersMappers().forEach(
+        parameterMapper -> parameterValues.putAll(parameterMapper.map(containerRequestContext)));
+
     Object result = representation.getInformationProduct().getResult(parameterValues);
     if (result instanceof GraphQueryResult) {
       QueryResults.report((GraphQueryResult)result,new RDFXMLWriter(outputStream));
