@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.dotwebstack.framework.frontend.ld.appearance.Appearance;
@@ -25,9 +26,6 @@ import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 
 public class CreatePage {
 
-  private static final String CONTEXT = 
-      "<context staticroot='/assets'><title>LDT 2.0 alfa</title></context>";
-
   public static void write(OutputStream outputStream, GraphEntity graphEntity) throws IOException {
 
     try {
@@ -39,7 +37,8 @@ public class CreatePage {
           QueryResults.report(((GraphEntity)input).getQueryResult(),new RDFXMLWriter(outputStream));
         }
       };
-      write(outputStream,dataPipe,graphEntity.getRepresentation());
+      write(outputStream,dataPipe,graphEntity.getRepresentation(),
+          ((LegacyGraphEntity)graphEntity).getContainerRequestContext());
 
     } catch (Exception ex) {
       throw new IOException(ex);
@@ -58,15 +57,16 @@ public class CreatePage {
               new SPARQLResultsXMLWriter(outputStream));
         }
       };
-      write(outputStream,dataPipe,tupleEntity.getRepresentation());
+      write(outputStream,dataPipe,tupleEntity.getRepresentation(),
+          ((LegacyTupleEntity)tupleEntity).getContainerRequestContext());
 
     } catch (Exception ex) {
       throw new IOException(ex);
     }
   }
 
-  public static void write(OutputStream outputStream, Pipe dataPipe, Representation representation)
-      throws IOException {
+  public static void write(OutputStream outputStream, Pipe dataPipe, Representation representation,
+      ContainerRequestContext containerRequestContext) throws IOException {
 
     try {
       //Construct config pipe
@@ -96,11 +96,13 @@ public class CreatePage {
         }
       };
       //Merge configuration result with context (empty at this moment)
+      Context context = new Context(containerRequestContext);
       Pipe configPipe2 = new Pipe(configPipe1) {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
             throws Exception {
-          XmlMerger.merge("root", outputStream, new StreamSource(inputStream));
+          XmlMerger.merge("root", outputStream, new StreamSource(
+              new StringReader(context.getContextXml())), new StreamSource(inputStream));
         }
       };
       //rdf2view.xsl (create configuration XML from RDF). Result is used more than ones, so store
@@ -171,9 +173,10 @@ public class CreatePage {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
             throws Exception {
-          XmlMerger.merge("root", outputStream, new StreamSource(new StringReader(CONTEXT)), new
-              StreamSource(new ByteArrayInputStream(((ByteArrayOutputStream)input).toByteArray())),
-                  new StreamSource(inputStream));
+          XmlMerger.merge("root", outputStream,new StreamSource(
+              new StringReader(context.getContextXml())), new StreamSource(
+                new ByteArrayInputStream(((ByteArrayOutputStream)input).toByteArray())),
+                    new StreamSource(inputStream));
         }
       };
       //rdf2rdfa.xsl (create RDF annotated with UI declarations)
