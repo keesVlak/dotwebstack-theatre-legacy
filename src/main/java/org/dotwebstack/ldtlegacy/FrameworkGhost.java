@@ -25,7 +25,7 @@ public class FrameworkGhost {
   public static Object fetchInformationProductData(Representation representation,
                                                    Map<String, Object> parameterValues,
                                                    ContainerRequestContext context) {
-    representation.getParametersMappers().forEach(parameterMapper ->
+    representation.getParameterMappers().forEach(parameterMapper ->
         parameterValues.putAll(parameterMapper.map(context)));
 
     return representation.getInformationProduct().getResult(parameterValues);
@@ -34,7 +34,7 @@ public class FrameworkGhost {
   public static void getXml(Representation representation, Map<String, Object> parameterValues,
                             OutputStream outputStream,
                             ContainerRequestContext containerRequestContext) {
-    representation.getParametersMappers().forEach(
+    representation.getParameterMappers().forEach(
         parameterMapper -> parameterValues.putAll(parameterMapper.map(containerRequestContext)));
 
     Object result = representation.getInformationProduct().getResult(parameterValues);
