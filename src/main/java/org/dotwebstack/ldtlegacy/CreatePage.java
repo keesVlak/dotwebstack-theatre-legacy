@@ -28,12 +28,8 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CreatePage {
-
-  private static final Logger LOG = LoggerFactory.getLogger(CreatePage.class);
 
   public static void write(OutputStream outputStream, GraphEntity graphEntity,
       String linkstrategy) throws IOException {
@@ -171,7 +167,6 @@ public class CreatePage {
       containerRequestContext.getUriInfo().getQueryParameters().forEach((name, value) -> {
         if (!value.isEmpty()) {
           parameterValues.put(name, value.get(0));
-          LOG.info("Set request parameter {}: {}", name, value.get(0));
         }
       });
 

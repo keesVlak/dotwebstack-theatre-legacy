@@ -13,4 +13,5 @@ dotwebstack:
   config:
     resourcePath: file:./config
     host: localhost
+    linkstrategy: global
     systemGraph: http://dotwebstack.org/configuration/Theatre
