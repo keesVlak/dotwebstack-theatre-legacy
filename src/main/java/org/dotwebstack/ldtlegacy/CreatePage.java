@@ -35,7 +35,8 @@ public class CreatePage {
 
   private static final Logger LOG = LoggerFactory.getLogger(CreatePage.class);
 
-  public static void write(OutputStream outputStream, GraphEntity graphEntity) throws IOException {
+  public static void write(OutputStream outputStream, GraphEntity graphEntity,
+      String linkstrategy) throws IOException {
 
     try {
       //Convert rdf result to xml
@@ -47,14 +48,15 @@ public class CreatePage {
         }
       };
       write(outputStream,dataPipe,graphEntity.getRepresentation(),
-          ((LegacyGraphEntity)graphEntity).getContainerRequestContext());
+          ((LegacyGraphEntity)graphEntity).getContainerRequestContext(), linkstrategy);
 
     } catch (Exception ex) {
       throw new IOException(ex);
     }
   }
 
-  public static void write(OutputStream outputStream, TupleEntity tupleEntity) throws IOException {
+  public static void write(OutputStream outputStream, TupleEntity tupleEntity,
+      String linkstrategy) throws IOException {
 
     try {
       //Convert rdf result to xml
@@ -67,7 +69,7 @@ public class CreatePage {
         }
       };
       write(outputStream,dataPipe,tupleEntity.getRepresentation(),
-          ((LegacyTupleEntity)tupleEntity).getContainerRequestContext());
+          ((LegacyTupleEntity)tupleEntity).getContainerRequestContext(), linkstrategy);
 
     } catch (Exception ex) {
       throw new IOException(ex);
@@ -75,7 +77,7 @@ public class CreatePage {
   }
 
   public static void write(OutputStream outputStream, Pipe dataPipe, Representation representation,
-      ContainerRequestContext containerRequestContext) throws IOException {
+      ContainerRequestContext containerRequestContext, String linkstrategy) throws IOException {
 
     try {
       //Construct config pipe
@@ -105,7 +107,7 @@ public class CreatePage {
         }
       };
       //Merge configuration result with context (empty at this moment)
-      Context context = new Context(containerRequestContext);
+      Context context = new Context(containerRequestContext,linkstrategy);
       Pipe configPipe2 = new Pipe(configPipe1) {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
