@@ -6,12 +6,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.dotwebstack.framework.frontend.ld.appearance.Appearance;
 import org.dotwebstack.framework.frontend.ld.entity.GraphEntity;
 import org.dotwebstack.framework.frontend.ld.entity.TupleEntity;
 import org.dotwebstack.framework.frontend.ld.representation.Representation;
+import org.dotwebstack.framework.param.Parameter;
 import org.dotwebstack.ldtlegacy.pipe.EndTerminal;
 import org.dotwebstack.ldtlegacy.pipe.Pipe;
 import org.dotwebstack.ldtlegacy.pipe.StartTerminal;
@@ -22,11 +27,13 @@ import org.eclipse.rdf4j.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CreatePage {
 
-  private static final String CONTEXT = 
-      "<context staticroot='/assets'><title>LDT 2.0 alfa</title></context>";
+  private static final Logger LOG = LoggerFactory.getLogger(CreatePage.class);
 
   public static void write(OutputStream outputStream, GraphEntity graphEntity) throws IOException {
 
@@ -39,7 +46,8 @@ public class CreatePage {
           QueryResults.report(((GraphEntity)input).getQueryResult(),new RDFXMLWriter(outputStream));
         }
       };
-      write(outputStream,dataPipe,graphEntity.getRepresentation());
+      write(outputStream,dataPipe,graphEntity.getRepresentation(),
+          ((LegacyGraphEntity)graphEntity).getContainerRequestContext());
 
     } catch (Exception ex) {
       throw new IOException(ex);
@@ -58,15 +66,16 @@ public class CreatePage {
               new SPARQLResultsXMLWriter(outputStream));
         }
       };
-      write(outputStream,dataPipe,tupleEntity.getRepresentation());
+      write(outputStream,dataPipe,tupleEntity.getRepresentation(),
+          ((LegacyTupleEntity)tupleEntity).getContainerRequestContext());
 
     } catch (Exception ex) {
       throw new IOException(ex);
     }
   }
 
-  public static void write(OutputStream outputStream, Pipe dataPipe, Representation representation)
-      throws IOException {
+  public static void write(OutputStream outputStream, Pipe dataPipe, Representation representation,
+      ContainerRequestContext containerRequestContext) throws IOException {
 
     try {
       //Construct config pipe
@@ -96,11 +105,13 @@ public class CreatePage {
         }
       };
       //Merge configuration result with context (empty at this moment)
+      Context context = new Context(containerRequestContext);
       Pipe configPipe2 = new Pipe(configPipe1) {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
             throws Exception {
-          XmlMerger.merge("root", outputStream, new StreamSource(inputStream));
+          XmlMerger.merge("root", outputStream, new StreamSource(
+              new StringReader(context.getContextXml())), new StreamSource(inputStream));
         }
       };
       //rdf2view.xsl (create configuration XML from RDF). Result is used more than ones, so store
@@ -153,11 +164,20 @@ public class CreatePage {
       //Start the datapipe
       dataPipe3.start();
 
-      
+      // get parameters
+      Map<String, Object> parameterValues = new HashMap<>();
+      containerRequestContext.getUriInfo().getQueryParameters().forEach((name, value) -> {
+        if (!value.isEmpty()) {
+          parameterValues.put(name, value.get(0));
+          LOG.info("Set request parameter {}: {}", name, value.get(0));
+        }
+      });
+
       //Fetch data from all sub representations. The result will be part of the rdfData stream.
       int index = 1;
       for (Representation subRepresentation : representation.getSubRepresentations()) {
-        addData(dataMerger, view, subRepresentation, index++);
+        addData(dataMerger, view, subRepresentation, parameterValues, index++,
+                containerRequestContext);
       }
       
       //Finish merging
@@ -171,9 +191,10 @@ public class CreatePage {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
             throws Exception {
-          XmlMerger.merge("root", outputStream, new StreamSource(new StringReader(CONTEXT)), new
-              StreamSource(new ByteArrayInputStream(((ByteArrayOutputStream)input).toByteArray())),
-                  new StreamSource(inputStream));
+          XmlMerger.merge("root", outputStream,new StreamSource(
+              new StringReader(context.getContextXml())), new StreamSource(
+                new ByteArrayInputStream(((ByteArrayOutputStream)input).toByteArray())),
+                    new StreamSource(inputStream));
         }
       };
       //rdf2rdfa.xsl (create RDF annotated with UI declarations)
@@ -258,7 +279,8 @@ public class CreatePage {
   }
   
   private static void addData(XmlMerger merger, OutputStream view, Representation representation,
-      int index) throws IOException {
+                              Map<String, Object> parameterValues, int index,
+                              ContainerRequestContext containerRequestContext) throws IOException {
 
     //SubRepresentation is present, so start adding the subrepresentation
     StartTerminal pipe1 = new StartTerminal(representation) {
@@ -266,7 +288,8 @@ public class CreatePage {
       public void filter(Object input, InputStream inputStream, OutputStream outputStream)
           throws Exception {
         //The data of the subrepresentation isn't available yet, so we need to fetch it...
-        FrameworkGhost.getXml((Representation)input,outputStream);
+        FrameworkGhost.getXml((Representation)input, parameterValues, outputStream,
+                containerRequestContext);
       }
     };
     //Transform from sparql result to rdf (cleaned)
