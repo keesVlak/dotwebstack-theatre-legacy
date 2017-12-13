@@ -20,13 +20,21 @@ import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-
 
 @Service
 @EntityWriter(resultType = ResultType.TUPLE)
 @Produces(MediaType.TEXT_HTML)
 public class HtmlTupleEntityWriter implements MessageBodyWriter<TupleEntity> {
+
+  private String linkstrategy;
+
+  @Autowired
+  public HtmlTupleEntityWriter(Environment environment) {
+    linkstrategy = environment.getProperty("dotwebstack.config.linkstrategy");
+  }
 
   @Override
   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations,
@@ -47,6 +55,6 @@ public class HtmlTupleEntityWriter implements MessageBodyWriter<TupleEntity> {
       Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> multivaluedMap,
       OutputStream outputStream) throws IOException {
 
-    CreatePage.write(outputStream,tupleEntity);
+    CreatePage.write(outputStream,tupleEntity,linkstrategy);
   }
 }
