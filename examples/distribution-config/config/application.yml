@@ -14,3 +14,8 @@ dotwebstack:
     resourcePath: file:./config
     host: localhost
     systemGraph: http://dotwebstack.org/configuration/Theatre
+    shacl:
+      uri:
+        result:
+          path: http://www.w3.org/ns/shacl#resultPath
+          message:
