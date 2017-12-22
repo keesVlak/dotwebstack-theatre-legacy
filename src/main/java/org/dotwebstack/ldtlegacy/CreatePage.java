@@ -36,7 +36,8 @@ public class CreatePage {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
             throws Exception {
-          QueryResults.report(((GraphEntity) input).getQueryResult(), new RDFXMLWriter(outputStream));
+          QueryResults.report(((GraphEntity) input).getQueryResult(),
+              new RDFXMLWriter(outputStream));
         }
       };
       write(outputStream, dataPipe, graphEntity.getRepresentation(),
