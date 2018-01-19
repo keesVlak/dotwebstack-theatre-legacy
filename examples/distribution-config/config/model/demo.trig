@@ -19,6 +19,11 @@ GRAPH config:Theatre {
   config:Stage a elmo:Stage;
     elmo:site config:Site;
     elmo:basePath "";
+    elmo:layout config:StageLayout;
+  .
+  
+  config:StageLayout a elmo:Layout;
+    xhtml:stylesheet "stage-layout.css";
   .
 
   config:DBPediaBackend a elmo:SparqlBackend;
