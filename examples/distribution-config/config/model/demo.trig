@@ -185,7 +185,8 @@ GRAPH config:Theatre {
   config:SubjectParameter a elmo:TermFilter;
     elmo:name "subject";
     elmo:shape [
-      sh:nodeKind sh:Iri;
+      #sh:nodeKind sh:IRI;
+      sh:datatype xsd:string;
     ];
   .
   config:DBPediaResourceData a elmo:InformationProduct;
@@ -220,13 +221,13 @@ GRAPH config:Theatre {
   config:AmersfoortAppearance a elmo:Appearance;
     elmo:fragment [
       elmo:appliesTo dbo:thumbnail;
-      rdfs:label "Image";
+      rdfs:label "Image"@en;
       elmo:index "1";
       elmo:appearance elmo:ImageAppearance;
     ];
     elmo:fragment [
       elmo:appliesTo rdfs:label;
-      rdfs:label "City name";
+      rdfs:label "City name"@en;
       elmo:index "2";
     ];
     elmo:fragment [
@@ -236,7 +237,7 @@ GRAPH config:Theatre {
     ];
     elmo:fragment [
       elmo:appliesTo rdf:type;
-      rdfs:label "Resource type";
+      rdfs:label "Resource type"@en;
       xhtml:link "/demo/resource";
       elmo:index "4";
     ];

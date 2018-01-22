@@ -31,7 +31,7 @@ GRAPH config:Theatre {
   dbeerpedia:TupleBeweryListAppearance a elmo:TableAppearance;
     elmo:fragment [
 	  elmo:appliesTo "name";
-	    rdfs:label "Naam";
+	    rdfs:label "Naam"@en;
     ];
   .
 
