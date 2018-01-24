@@ -7,6 +7,7 @@ import org.dotwebstack.framework.frontend.ld.representation.Representation;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.query.algebra.Str;
 import org.eclipse.rdf4j.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 
@@ -23,7 +24,7 @@ import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 public class FrameworkGhost {
 
   public static Object fetchInformationProductData(Representation representation,
-                                                   Map<String, Object> parameterValues,
+                                                   Map<String, String> parameterValues,
                                                    ContainerRequestContext context) {
     representation.getParameterMappers().forEach(parameterMapper ->
         parameterValues.putAll(parameterMapper.map(context)));
@@ -31,7 +32,7 @@ public class FrameworkGhost {
     return representation.getInformationProduct().getResult(parameterValues);
   }
   
-  public static void getXml(Representation representation, Map<String, Object> parameterValues,
+  public static void getXml(Representation representation, Map<String, String> parameterValues,
                             OutputStream outputStream,
                             ContainerRequestContext containerRequestContext) {
     representation.getParameterMappers().forEach(

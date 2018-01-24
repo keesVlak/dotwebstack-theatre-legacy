@@ -163,7 +163,7 @@ public class CreatePage {
       dataPipe3.start();
 
       // get parameters
-      Map<String, Object> parameterValues = new HashMap<>();
+      Map<String, String> parameterValues = new HashMap<>();
       containerRequestContext.getUriInfo().getQueryParameters().forEach((name, value) -> {
         if (!value.isEmpty()) {
           parameterValues.put(name, value.get(0));
@@ -276,7 +276,7 @@ public class CreatePage {
   }
   
   private static void addData(XmlMerger merger, OutputStream view, Representation representation,
-                              Map<String, Object> parameterValues, int index,
+                              Map<String, String> parameterValues, int index,
                               ContainerRequestContext containerRequestContext) throws IOException {
 
     //SubRepresentation is present, so start adding the subrepresentation
