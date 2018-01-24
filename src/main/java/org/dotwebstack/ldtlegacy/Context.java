@@ -1,11 +1,12 @@
 package org.dotwebstack.ldtlegacy;
 
+
 import java.net.URI;
 import javax.ws.rs.container.ContainerRequestContext;
 import lombok.NonNull;
 import org.dotwebstack.framework.frontend.http.layout.Layout;
 import org.dotwebstack.framework.frontend.http.stage.Stage;
-import org.dotwebstack.framework.vocabulary.XHTML;
+import org.dotwebstack.ldtlegacy.vocabulary.XHTML;
 
 public class Context {
 
