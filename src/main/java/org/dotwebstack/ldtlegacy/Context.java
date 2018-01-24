@@ -1,6 +1,5 @@
 package org.dotwebstack.ldtlegacy;
 
-
 import java.net.URI;
 import javax.ws.rs.container.ContainerRequestContext;
 import lombok.NonNull;
