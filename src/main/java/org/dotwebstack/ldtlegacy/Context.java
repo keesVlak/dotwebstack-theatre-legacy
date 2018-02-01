@@ -25,14 +25,15 @@ public class Context {
      */
     String path = uri.getPath().replaceAll("^/" + uri.getHost(), "");
     String fullUrl = String.format("%s://%s%s", uri.getScheme(), uri.getAuthority(), path);
-    Layout layout = stage.getLayout();
     String stylesheet = "";
+    Layout layout = stage.getLayout();
     if (layout == null) {
       layout = stage.getSite().getLayout();
     }
     if (layout != null) {
+      stylesheet = String.format("<stylesheet href='%s'/>",layout.getOptions().size());
       if (layout.getOptions().containsKey(XHTML.STYLESHEET)) {
-        stylesheet = String.format("<stylesheet href='/assets/css/%s'/>", layout.getOptions().get(XHTML.STYLESHEET));
+        stylesheet = String.format("<stylesheet href='/assets/css/%s'/>", layout.getOptions().get(XHTML.STYLESHEET).stringValue());
       }
     }
     contextXml = String.format(CONTEXT_TEMPLATE, linkstrategy, fullUrl, stylesheet);
