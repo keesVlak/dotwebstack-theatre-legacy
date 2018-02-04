@@ -17,13 +17,13 @@ GRAPH config:Theatre {
   .
 
   dbeerpedia:GraphBreweryListRepresentation a elmo:Representation;
-    elmo:urlPattern "/graph-breweries";
+    elmo:pathPattern "/graph-breweries";
     elmo:stage dbeerpedia:Stage;
     elmo:informationProduct dbeerpedia:GraphBreweries;
   .
 
   dbeerpedia:TupleBreweryListRepresentation a elmo:Representation;
-    elmo:urlPattern "/tuple-breweries";
+    elmo:pathPattern "/tuple-breweries";
 	elmo:appearance dbeerpedia:TupleBeweryListAppearance;
     elmo:stage dbeerpedia:Stage;
     elmo:informationProduct dbeerpedia:TupleBreweries;
