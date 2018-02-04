@@ -19,6 +19,11 @@ GRAPH config:Theatre {
   config:Stage a elmo:Stage;
     elmo:site config:Site;
     elmo:basePath "";
+    elmo:layout config:StageLayout;
+  .
+  
+  config:StageLayout a elmo:Layout;
+    xhtml:stylesheet "stage-layout.css";
   .
 
   config:DBPediaBackend a elmo:SparqlBackend;
@@ -133,7 +138,7 @@ GRAPH config:Theatre {
 # ==========================
 
   config:Homepage a elmo:Representation;
-    elmo:urlPattern "";
+    elmo:pathPattern "";
     elmo:stage config:Stage;
     elmo:informationProduct config:HomepageData;
     elmo:appearance config:HomepageAppearance;
@@ -173,14 +178,15 @@ GRAPH config:Theatre {
 # ==========================
 
   config:DBPediaResource a elmo:Representation;
-    elmo:urlPattern "/resource";
+    elmo:pathPattern "/demo/resource";
     elmo:stage config:Stage;
     elmo:informationProduct config:DBPediaResourceData;
   .
   config:SubjectParameter a elmo:TermFilter;
     elmo:name "subject";
     elmo:shape [
-      sh:nodeKind sh:Iri;
+      #sh:nodeKind sh:IRI;
+      sh:datatype xsd:string;
     ];
   .
   config:DBPediaResourceData a elmo:InformationProduct;
@@ -204,7 +210,7 @@ GRAPH config:Theatre {
 # ==========================
 
   config:Amersfoort a elmo:Representation;
-    elmo:urlPattern "/demo/amersfoort";
+    elmo:pathPattern "/demo/amersfoort";
     elmo:stage config:Stage;
     elmo:contains config:Menu;
     elmo:contains config:FormatIndex;
@@ -215,13 +221,13 @@ GRAPH config:Theatre {
   config:AmersfoortAppearance a elmo:Appearance;
     elmo:fragment [
       elmo:appliesTo dbo:thumbnail;
-      rdfs:label "Image";
+      rdfs:label "Image"@en;
       elmo:index "1";
       elmo:appearance elmo:ImageAppearance;
     ];
     elmo:fragment [
       elmo:appliesTo rdfs:label;
-      rdfs:label "City name";
+      rdfs:label "City name"@en;
       elmo:index "2";
     ];
     elmo:fragment [
@@ -231,7 +237,7 @@ GRAPH config:Theatre {
     ];
     elmo:fragment [
       elmo:appliesTo rdf:type;
-      rdfs:label "Resource type";
+      rdfs:label "Resource type"@en;
       xhtml:link "/demo/resource";
       elmo:index "4";
     ];
@@ -280,13 +286,13 @@ GRAPH config:Theatre {
 # ==========================
 
   config:Search a elmo:Representation;
-    elmo:urlPattern "/search";
+    elmo:pathPattern "/search";
     elmo:stage config:Stage;
     elmo:contains config:Menu;
     elmo:informationProduct config:SearchData;
   .
   config:SearchInPath a elmo:Representation;
-    elmo:urlPattern "/search/{term}";
+    elmo:pathPattern "/search/{term}";
     elmo:parameterMapper config:SubjectFromUrl;
     elmo:stage config:Stage;
     elmo:contains config:Menu;
@@ -325,7 +331,7 @@ GRAPH config:Theatre {
 # ==========================
 
   config:Places a elmo:Representation;
-    elmo:urlPattern "/demo/places";
+    elmo:pathPattern "/demo/places";
     elmo:stage config:Stage;
     elmo:contains config:PlacesTree;
     elmo:contains config:Menu;
