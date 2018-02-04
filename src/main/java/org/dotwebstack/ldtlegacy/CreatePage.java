@@ -102,8 +102,9 @@ public class CreatePage {
               new StreamResult(outputStream));
         }
       };
-      //Merge configuration result with context
-      Context context = new Context(containerRequestContext,linkstrategy,representation.getStage());
+      //Merge configuration result with context (empty at this moment)
+      Context context = new Context(containerRequestContext, linkstrategy,
+          representation.getStage());
       Pipe configPipe2 = new Pipe(configPipe1) {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
