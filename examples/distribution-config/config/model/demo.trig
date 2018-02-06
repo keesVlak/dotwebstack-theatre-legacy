@@ -184,7 +184,7 @@ GRAPH config:Theatre {
     elmo:stage config:Stage;
     elmo:informationProduct config:DBPediaResourceData;
   .
-  config:SubjectParameter a elmo:TermFilter;
+  config:SubjectParameter a elmo:TermParameter;
     elmo:name "subject";
     elmo:shape [
       #sh:nodeKind sh:IRI;
@@ -306,7 +306,7 @@ GRAPH config:Theatre {
     elmo:template "{term}";
     elmo:target config:TermParameter;
   .
-  config:TermParameter a elmo:TermFilter;
+  config:TermParameter a elmo:TermParameter;
     elmo:name "term";
     elmo:shape [
       sh:datatype xsd:string;
