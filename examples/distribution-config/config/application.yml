@@ -7,7 +7,8 @@ spring:
     static-locations: file:./config/static/,classpath:/static/
 
 logging.level:
-  org.dotwebstack.framework: DEBUG
+  org.dotwebstack.framework: INFO
+  org.dotwebstack.ldtlegacy: DEBUG
 
 dotwebstack:
   config:

@@ -28,8 +28,12 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+import org.slf4j.Logger; 
+import org.slf4j.LoggerFactory; 
 
 public class CreatePage {
+
+  private static final Logger LOG = LoggerFactory.getLogger(CreatePage.class);
 
   public static void write(OutputStream outputStream, GraphEntity graphEntity,
       String linkstrategy) throws IOException {
@@ -242,8 +246,11 @@ public class CreatePage {
         Model model;
         if (input != null) {
           model = ((Appearance)input).getModel();
+          LOG.debug(String.format("Appearance: %s, type: %s",((Appearance)input).getIdentifier(),
+              ((Appearance)input).getType()));
         } else {
           model = new LinkedHashModel();
+          LOG.debug("Appearance: none");
         }
         Rio.write(model, outputStream, RDFFormat.RDFXML);
       }
