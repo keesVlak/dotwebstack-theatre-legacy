@@ -1,0 +1,22 @@
+@prefix dbeerpedia: <http://dbeerpedia.org#> .
+@prefix elmo: <http://dotwebstack.org/def/elmo#> .
+@prefix elmo-rt: <http://dotwebstack.org/def/elmo/result-type/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix config: <http://dotwebstack.org/configuration/>.
+
+GRAPH config:Theatre {
+
+  dbeerpedia:DocEndpoint a elmo:DynamicEndpoint;
+      rdfs:label "label";
+      elmo:pathPattern "/id/{reference}";
+      elmo:parameterMapper config:SubjectFromUrl;
+    .
+
+    dbeerpedia:ResourceRepresentation a elmo:Representation;
+      elmo:stage dbeerpedia:Stage;
+      elmo:appliesTo "http://{domain}/{path}/id/{reference}";
+      elmo:informationProduct dbeerpedia:TupleBreweries;
+    .
+
+}
