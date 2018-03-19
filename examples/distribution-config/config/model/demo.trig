@@ -143,11 +143,9 @@ GRAPH config:Theatre {
     elmo:pathPattern "";
     elmo:stage config:Stage;
     elmo:informationProduct config:HomepageData;
-    elmo:appearance config:HomepageAppearance;
+    elmo:appearance [a elmo:HtmlAppearance];
     elmo:contains config:Menu;
     elmo:contains config:Footer;
-  .
-  config:HomepageAppearance a elmo:HtmlAppearance;
   .
   config:HomepageData a elmo:InformationProduct;
     elmo:backend config:DBPediaBackend;
