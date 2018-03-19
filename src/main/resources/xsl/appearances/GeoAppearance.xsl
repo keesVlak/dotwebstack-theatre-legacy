@@ -1,10 +1,10 @@
 <!--
 
     NAME     GeoAppearance.xsl
-    VERSION  1.19.1
-    DATE     2017-10-17
+    VERSION  1.21.0
+    DATE     2018-03-19
 
-    Copyright 2012-2017
+    Copyright 2012-2018
 
     This file is part of the Linked Data Theatre.
 
@@ -139,6 +139,12 @@
 		<xsl:variable name="width"><xsl:value-of select="$htmlwidth"/><xsl:if test="not($htmlwidth!='')">1000</xsl:if></xsl:variable>
 		<xsl:variable name="height"><xsl:value-of select="$htmlheight"/><xsl:if test="not($htmlheight!='')">600</xsl:if></xsl:variable>
 		
+		<xsl:variable name="icons">
+			<xsl:for-each select="rdf:Description[html:icon!='' and elmo:applies-to!='' and not(matches(elmo:applies-to,'^http://bp4mc2.org/elmo/def'))]">
+				<icon class="{elmo:applies-to}"><xsl:value-of select="html:icon"/></icon>
+			</xsl:for-each>
+		</xsl:variable>
+		
 		<style>
 				.shidden-object {
 					display:none;
@@ -199,7 +205,6 @@
 						addPoint(<xsl:value-of select="geo:lat[1]"/>,<xsl:value-of select="geo:long[1]"/>,"<xsl:apply-templates select="rdfs:label" mode="safejsonstring"/>","<xsl:value-of select="$resource-uri"/>","<xsl:value-of select="rdf:value"/>","<xsl:value-of select="html:icon"/>");
 					</xsl:for-each>
 					<xsl:for-each select="rdf:Description[geo:geometry!='']"><xsl:sort select="string-length(geo:geometry[1])" data-type="number" order="descending"/>
-						<!-- //<xsl:value-of select="string-length(geo:geometry[1])"/>-<xsl:value-of select="key('resource',elmo:style[1]/@rdf:resource)/elmo:name"/> -->
 						<xsl:variable name="link-uri">
 							<xsl:choose>
 								<xsl:when test="exists(html:link)"><xsl:copy-of select="html:link"/></xsl:when>
@@ -212,14 +217,15 @@
 								<xsl:with-param name="var" select="$link-uri/html:link"/>
 							</xsl:call-template>
 						</xsl:variable>
+						<xsl:variable name="styleuri" select="elmo:style/@rdf:resource"/>
 						<xsl:variable name="styleclass">
 							<xsl:choose>
-								<xsl:when test="elmo:style/@rdf:resource='http://bp4mc2.org/elmo/def#HiddenStyle'">hidden-object</xsl:when>
+								<xsl:when test="$styleuri='http://bp4mc2.org/elmo/def#HiddenStyle'">hidden-object</xsl:when>
 								<xsl:when test="html:stylesheet!=''"><xsl:value-of select="html:stylesheet"/></xsl:when>
-								<xsl:otherwise><xsl:value-of select="key('resource',elmo:style[1]/@rdf:resource)/elmo:name[1]"/></xsl:otherwise>
+								<xsl:otherwise><xsl:value-of select="../rdf:Description[@rdf:about=$styleuri]/elmo:name[1]"/></xsl:otherwise>
 							</xsl:choose>
 						</xsl:variable>
-						addWKT("<xsl:value-of select="@rdf:about"/>","<xsl:value-of select="geo:geometry[1]"/>","<xsl:value-of select="rdfs:label[1]"/>","<xsl:value-of select="$resource-uri"/>","s<xsl:value-of select="$styleclass"/><xsl:if test="$styleclass=''">default</xsl:if>");
+						addWKT("<xsl:value-of select="@rdf:about"/>","<xsl:value-of select="geo:geometry[1]"/>","<xsl:value-of select="rdfs:label[1]"/>","<xsl:value-of select="$resource-uri"/>","s<xsl:value-of select="$styleclass"/><xsl:if test="$styleclass=''">default</xsl:if>","<xsl:value-of select="$icons/icon[@class=$styleclass]"/>");
 					</xsl:for-each>
 
 					<xsl:for-each select="rdf:Description[geo:geometry!='']/(* except (html:link|elmo:style))[exists(@rdf:resource)]">

@@ -35,6 +35,10 @@ GRAPH config:Theatre {
   config:LOVBackend a elmo:SparqlBackend;
     elmo:endpoint "http://lov.okfn.org/dataset/lov/sparql"^^xsd:anyURI;
   .
+  
+  config:LocalBackend a elmo:SparqlBackend;
+    elmo:endpoint "http://localhost:8890/sparql"^^xsd:anyURI
+  .
 
 # ==========================
 #
@@ -386,4 +390,59 @@ GRAPH config:Theatre {
     """;
   .
   
+# ==========================
+#
+# Editor
+#
+# ==========================
+
+  config:Editor a elmo:Representation;
+    elmo:stage config:Stage;
+    elmo:contains config:Menu;
+    elmo:pathPattern "/demo/editor";
+    elmo:appearance config:EditorAppearance;
+    elmo:informationProduct config:EditorData
+  .
+  config:EditorAppearance a elmo:EditorAppearance;
+    elmo:fragment [
+      elmo:index 1;
+      elmo:appliesTo "@id";
+      rdfs:label "URI"@en;
+    ];
+    elmo:fragment [
+      elmo:index 2;
+      elmo:appliesTo rdf:type;
+      rdf:value skos:Concept;
+      rdfs:label "Type"@en;
+    ];
+    elmo:fragment [
+      elmo:index 3;
+      elmo:appliesTo skos:prefLabel;
+      rdfs:label "name"@en;
+    ];
+    elmo:fragment [
+      elmo:appliesTo "dummy"; # BUG in elmo-shacl: appliesTo should not be mandatory
+      elmo:appearance elmo:SubmitAppearance;
+      rdfs:label "Opslaan"@nl;
+      rdfs:label "Save"@en;
+    ];
+  .
+  config:EditorData a elmo:InformationProduct;
+    elmo:backend config:LocalBackend;
+    elmo:query """
+      CONSTRUCT {
+        ?concept a skos:Concept.
+        ?concept skos:prefLabel ?name
+      }
+      WHERE {
+        SELECT ?concept ?name
+        WHERE {
+          ?concept a skos:Concept.
+          ?concept skos:prefLabel ?name
+        }
+        LIMIT 10
+      }
+    """
+  .
+
 }

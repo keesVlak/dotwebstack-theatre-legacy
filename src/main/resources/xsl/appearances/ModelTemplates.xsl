@@ -1,10 +1,10 @@
 <!--
 
     NAME     ModelTemplates.xsl
-    VERSION  1.19.0
-    DATE     2017-10-16
+    VERSION  1.21.0
+    DATE     2018-03-19
 
-    Copyright 2012-2017
+    Copyright 2012-2018
 
     This file is part of the Linked Data Theatre.
 
@@ -45,6 +45,7 @@
 	xmlns:dc="http://purl.org/dc/elements/1.1/"
 	xmlns:foaf="http://xmlns.com/foaf/0.1/"
 	xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+	xmlns:owl="http://www.w3.org/2002/07/owl#"
 >
 
 <xsl:template match="rdf:Description" mode="supershape-rec">
@@ -70,10 +71,17 @@
 </xsl:template>
 
 <xsl:template match="rdf:RDF" mode="VocabularyVariable">
+	<!-- All (other) named entities -->
+	<xsl:variable name="all-named-entities">
+		<xsl:for-each select="rdf:Description[not(exists(rdf:type)) and exists(sh:name)]/sh:targetNode">
+			<named-entity uri="{@rdf:resource}"><xsl:value-of select="../sh:name"/></named-entity>
+		</xsl:for-each>
+	</xsl:variable>
+	<xsl:copy-of select="$all-named-entities"/>
 	<!-- All property shapes -->
 	<!-- Currently limited to simple paths and inverse paths, where the path is equal to the predicate -->
 	<xsl:variable name="all-property-shapes">
-		<xsl:for-each-group select="rdf:Description[exists(sh:path/(@rdf:resource|@rdf:nodeID))]" group-by="(@rdf:about|@rdf:nodeID)">
+		<xsl:for-each-group select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#PropertyShape' or exists(sh:path/(@rdf:resource|@rdf:nodeID))]" group-by="(@rdf:about|@rdf:nodeID)">
 			<xsl:variable name="predicate"><xsl:value-of select="sh:path/@rdf:resource"/></xsl:variable>
 			<xsl:variable name="path-uri" select="sh:path/@rdf:nodeID"/>
 			<xsl:variable name="inverse-predicate"><xsl:value-of select="../rdf:Description[@rdf:nodeID=$path-uri]/sh:inversePath/@rdf:resource"/></xsl:variable>
@@ -86,12 +94,55 @@
 				<!-- Escape to add rdfs:range as ref-class. Only for specific nodekinds (to avoid adding datatypes like xsd:string as ref-class) -->
 				<xsl:if test="current-group()/sh:nodeKind/@rdf:resource='http://www.w3.org/ns/shacl#BlankNodeOrIRI' and not(exists(current-group()/sh:class))">
 					<xsl:variable name="propertyuri" select="sh:path/@rdf:resource"/>
-					<xsl:for-each select="../rdf:Description[@rdf:about=$propertyuri]/rdfs:range">
+					<xsl:for-each select="../rdf:Description[@rdf:about=$propertyuri]/rdfs:range[@rdf:resource!='']">
 						<ref-class uri="{@rdf:resource}"/>
 					</xsl:for-each>
 				</xsl:if>
+				<!-- Another escape to add rdfs:range -->
+				<xsl:if test="not(exists(current-group()/sh:class)) and not(exists(current-group()/sh:datatype))">
+					<xsl:variable name="propertyuri" select="sh:path/@rdf:resource"/>
+					<xsl:for-each select="../rdf:Description[@rdf:about=$propertyuri]/rdfs:range[@rdf:nodeID!='']">
+						<xsl:variable name="bnode" select="@rdf:nodeID"/>
+						<xsl:variable name="range" select="../../rdf:Description[@rdf:nodeID=$bnode]"/>
+						<ref-class uri="{$range/(owl:someValuesFrom|owl:onClass)/@rdf:resource}"/>
+						<xsl:if test="$range/owl:minQualifiedCardinality!=''">
+							<mincount><xsl:value-of select="$range/owl:minQualifiedCardinality"/></mincount>
+						</xsl:if>
+						<xsl:if test="$range/owl:maxQualifiedCardinality!=''">
+							<maxcount><xsl:value-of select="$range/owl:maxQualifiedCardinality"/></maxcount>
+						</xsl:if>
+					</xsl:for-each>
+				</xsl:if>
+				<xsl:for-each select="current-group()/sh:nodeKind">
+					<nodekind uri="{@rdf:resource}"/>
+				</xsl:for-each>
 				<xsl:for-each select="current-group()/sh:datatype">
 					<datatype uri="{@rdf:resource}"/>
+				</xsl:for-each>
+				<xsl:if test="not(exists(current-group()/sh:datatype))">
+					<xsl:variable name="propertyuri" select="sh:path/@rdf:resource"/>
+					<xsl:for-each select="../rdf:Description[@rdf:about=$propertyuri]/rdfs:range[substring(@rdf:resource,1,33)='http://www.w3.org/2001/XMLSchema#']">
+						<datatype uri="{@rdf:resource}"/>
+					</xsl:for-each>
+				</xsl:if>
+				<xsl:for-each select="current-group()/sh:hasValue">
+					<xsl:variable name="uri" select="@rdf:resource"/>
+					<xsl:variable name="entity"><xsl:value-of select="$all-named-entities/named-entity[@uri=$uri]"/></xsl:variable>
+					<xsl:variable name="datatype">
+						<xsl:choose>
+							<xsl:when test="$entity!=''">entity</xsl:when>
+							<xsl:when test="exists(@rdf:resource)">uri</xsl:when>
+							<xsl:when test="@rdf:datatype='http://www.w3.org/2001/XMLSchema#integer'">nummeric</xsl:when>
+							<xsl:when test="@rdf:datatype='http://www.w3.org/2001/XMLSchema#decimal'">nummeric</xsl:when>
+							<xsl:otherwise>string</xsl:otherwise>
+						</xsl:choose>
+					</xsl:variable>
+					<value datatype="{$datatype}">
+						<xsl:choose>
+							<xsl:when test="$entity!=''"><xsl:value-of select="$entity"/></xsl:when>
+							<xsl:otherwise><xsl:value-of select="."/><xsl:value-of select="@rdf:resource"/></xsl:otherwise>
+						</xsl:choose>
+					</value>
 				</xsl:for-each>
 				<xsl:for-each select="current-group()/sh:pattern">
 					<pattern><xsl:value-of select="."/></pattern>
@@ -144,6 +195,13 @@
 					<xsl:if test="@rdf:resource='http://www.w3.org/2004/02/skos/core#inScheme' or $path/sh:inversePath/@rdf:resource='http://www.w3.org/2004/02/skos/core#member'">
 						<xsl:for-each select="current-group()/sh:hasValue">
 							<enumeration uri="{@rdf:resource}"/>
+						</xsl:for-each>
+						<!-- Enumerations are also possible as instances of sh:in -->
+						<xsl:for-each select="current-group()/sh:in">
+							<xsl:variable name="listhead" select="@rdf:nodeID"/>
+							<enumeration>
+								<xsl:apply-templates select="../../rdf:Description[@rdf:nodeID=$listhead]" mode="traverse-list"/>
+							</enumeration>
 						</xsl:for-each>
 					</xsl:if>
 				</xsl:for-each>
@@ -210,7 +268,7 @@
 						<xsl:when test="exists(../rdf:Description[@rdf:about=$class]/rdfs:subClassOf)">false</xsl:when>
 						<xsl:when test="exists(../rdf:Description[rdfs:subClassOf/@rdf:resource=$class])">false</xsl:when>
 						<xsl:when test="exists(sh:property)">
-							<xsl:variable name="property" select="sh:property/@rdf:nodeID"/>
+							<xsl:variable name="property" select="sh:property/(@rdf:nodeID|@rdf:resource)"/>
 							<xsl:choose>
 								<!-- If the shape is actually a list shape, don't count the shape -->
 								<xsl:when test="$all-property-shapes/propertyShape[@uri=$property]/@list='true'">true</xsl:when>
@@ -227,15 +285,21 @@
 				<xsl:variable name="predicate" select="$all-property-shapes/propertyShape[@uri=$property]"/>
 				<xsl:choose>
 					<xsl:when test="$predicate/enumeration/@uri!=''">
-						<xsl:attribute name="enumeration"><xsl:value-of select="$predicate/enumeration/@uri"/></xsl:attribute>
-						<xsl:for-each select="../rdf:Description[skos:inScheme/@rdf:resource=$predicate/enumeration/@uri]"><xsl:sort select="rdfs:label"/>
+						<xsl:variable name="enumeration" select="$predicate/enumeration/@uri"/>
+						<xsl:attribute name="enumeration"><xsl:value-of select="$enumeration"/></xsl:attribute>
+						<xsl:for-each select="../rdf:Description[skos:inScheme/@rdf:resource=$enumeration]"><xsl:sort select="rdfs:label"/>
 							<enumvalue name="{rdfs:label}" uri="{@rdf:about}"/>
 						</xsl:for-each>
-						<xsl:for-each select="../rdf:Description[@rdf:about=$predicate/enumeration/@uri]/skos:member">
+						<xsl:for-each select="../rdf:Description[@rdf:about=$enumeration]/skos:member">
 							<xsl:variable name="member" select="@rdf:resource"/>
 							<xsl:for-each select="../../rdf:Description[@rdf:about=$member]"><xsl:sort select="rdfs:label"/>
 								<enumvalue name="{rdfs:label}" uri="{@rdf:about}"/>
 							</xsl:for-each>
+						</xsl:for-each>
+					</xsl:when>
+					<xsl:when test="$predicate/enumeration/item[1]/@uri!=''">
+						<xsl:for-each select="$predicate/enumeration/item">
+							<enumeration uri="{@uri}"/>
 						</xsl:for-each>
 					</xsl:when>
 					<xsl:otherwise>
@@ -244,7 +308,8 @@
 							<xsl:variable name="predicate" select="$all-property-shapes/propertyShape[@uri=$property]"/>
 							<!-- If predicate doesn't exists, the shacl shape refers to an unknown predicate constraint! -->
 							<!-- Also: remove rdf:type property, except when it is used for roles, but NOT when the role is a loop -->
-							<xsl:if test="exists($predicate) and (exists($roles/role) or not(exists($predicate/role[@uri=$real-class])))">
+							<!-- Extra (Is this correct??): Remove any property that has no name and is not used as a role -->
+							<xsl:if test="$predicate/@name!='' and (exists($roles/role) or not(exists($predicate/role[@uri=$real-class])))">
 								<xsl:variable name="refclass" select="$predicate/ref-class/@uri"/>
 								<xsl:variable name="refnode" select="$predicate/ref-node/@uri"/>
 								<xsl:variable name="roleclass" select="$predicate/role[@uri!=$real-class]/@uri"/>
@@ -270,6 +335,21 @@
 									<xsl:if test="$predicate/datatype[1]/@uri!=''">
 										<xsl:attribute name="datatype"><xsl:value-of select="$predicate/datatype[1]/@uri"/></xsl:attribute>
 									</xsl:if>
+									<xsl:variable name="nodekind">
+										<xsl:choose>
+											<xsl:when test="$predicate/nodekind[1]/@uri='http://www.w3.org/ns/shacl#BlankNodeOrIRI'">BlankNodeOrIRI</xsl:when>
+											<xsl:when test="$predicate/nodekind[1]/@uri='http://www.w3.org/ns/shacl#BlankNode'">BlankNode</xsl:when>
+											<xsl:when test="$predicate/nodekind[1]/@uri='http://www.w3.org/ns/shacl#IRI'">IRI</xsl:when>
+											<xsl:when test="$predicate/nodekind[1]/@uri='http://www.w3.org/ns/shacl#Literal'">Literal</xsl:when>
+											<xsl:when test="$refclass!=''">BlankNodeOrIRI</xsl:when>
+											<xsl:when test="$predicate/datatype[1]/@uri!=''">Literal</xsl:when>
+											<xsl:otherwise />
+										</xsl:choose>
+									</xsl:variable>
+									<xsl:if test="$nodekind!=''">
+										<xsl:attribute name="nodekind"><xsl:value-of select="$nodekind"/></xsl:attribute>
+									</xsl:if>
+									<xsl:copy-of select="$predicate/value[1]"/>
 									<xsl:copy-of select="$predicate/label"/>
 									<!-- Refshapes are all shapes that have the particular refclass as target. @refnode contains a particular explicitly definied shape. Typically, this is one of the refshapes -->
 									<!-- Refshapes can be duplicated, so we need to strip the duplicated items -->
@@ -311,7 +391,7 @@
 												<xsl:choose>
 													<xsl:when test="exists(sh:property)">
 														<!-- If the shape is actually a list shape, don't count the shape -->
-														<xsl:variable name="property" select="sh:property/@rdf:nodeID"/>
+														<xsl:variable name="property" select="sh:property/(@rdf:nodeID|@rdf:resource)"/>
 														<xsl:choose>
 															<xsl:when test="$all-property-shapes/propertyShape[@uri=$property]/@list='true'">true</xsl:when>
 															<xsl:otherwise>false</xsl:otherwise>
@@ -494,13 +574,36 @@
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:for-each select="current-group()/rdfs:domain">
-							<scope-class uri="{@rdf:resource}"/>
+							<xsl:choose>
+								<xsl:when test="@rdf:resource!=''"><scope-class uri="{@rdf:resource}"/></xsl:when>
+								<xsl:when test="@rdf:nodeID!=''">
+									<xsl:variable name="bnode" select="@rdf:nodeID"/>
+									<scope-class uri="{../../rdf:Description[@rdf:nodeID=$bnode]/(owl:someValuesFrom|owl:onClass)/@rdf:resource}"/>
+								</xsl:when>
+								<xsl:otherwise/>
+							</xsl:choose>
 						</xsl:for-each>
 					</xsl:otherwise>
 				</xsl:choose>
 				<xsl:for-each-group select="$predicate/ref-class" group-by="@uri">
 					<ref-class uri="{@uri}"/>
 				</xsl:for-each-group>
+				<!-- Added, don't know if this is really OK ? -->
+				<xsl:if test="not(exists($predicate/ref-class)) and not(exists($predicate/datatype))">
+					<xsl:for-each select="current-group()/rdfs:range">
+						<xsl:choose>
+							<xsl:when test="@rdf:nodeID!=''">
+								<xsl:variable name="bnode" select="@rdf:nodeID"/>
+								<ref-class uri="{../../rdf:Description[@rdf:nodeID=$bnode]/(owl:someValuesFrom|owl:onClass)/@rdf:resource}"/>
+							</xsl:when>
+							<xsl:when test="substring(@rdf:resource,1,33)='http://www.w3.org/2001/XMLSchema#'">
+								<datatype uri="{@rdf:resource}"/>
+							</xsl:when>
+							<xsl:otherwise/>
+						</xsl:choose>
+					</xsl:for-each>
+				</xsl:if>
+				<!-- END Adding -->
 				<xsl:for-each-group select="$predicate/datatype" group-by="@uri">
 					<datatype uri="{@uri}"/>
 				</xsl:for-each-group>
@@ -597,6 +700,14 @@
 		</xsl:if>
 	</xsl:variable>
 	<xsl:value-of select="$label"/>
+	<xsl:if test="exists(value)">
+		<xsl:text> = </xsl:text>
+		<xsl:if test="value/@datatype='string'">"</xsl:if>
+		<xsl:if test="value/@datatype='uri'">&lt;</xsl:if>
+		<xsl:value-of select="value"/>
+		<xsl:if test="value/@datatype='string'">"</xsl:if>
+		<xsl:if test="value/@datatype='uri'">&gt;</xsl:if>
+	</xsl:if>
 	<xsl:if test="@datatype!=''"><xsl:text> (</xsl:text><xsl:value-of select="replace(@datatype,'^.*(#|/)([^(#|/)]+)$','$2')"/><xsl:text>)</xsl:text></xsl:if>
 	<xsl:if test="refshape/@shapename!=''"> &#x2192; <xsl:value-of select="refshape/@shapename"/></xsl:if>
 	<xsl:text> [</xsl:text><xsl:value-of select="@mincount"/><xsl:text>,</xsl:text><xsl:value-of select="@maxcount"/><xsl:text>]</xsl:text>
