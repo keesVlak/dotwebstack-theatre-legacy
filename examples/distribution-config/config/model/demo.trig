@@ -185,8 +185,8 @@ GRAPH config:Theatre {
   config:SubjectParameter a elmo:TermParameter;
     elmo:name "subject";
     elmo:shape [
-      #sh:nodeKind sh:IRI;
-      sh:datatype xsd:string;
+      sh:nodeKind sh:IRI;
+      #sh:datatype xsd:string;
     ];
   .
   config:DBPediaResourceData a elmo:InformationProduct;
@@ -194,10 +194,12 @@ GRAPH config:Theatre {
     elmo:requiredParameter config:SubjectParameter;
     elmo:query """
       CONSTRUCT {
-        <${subject}> ?p ?o
+#        <${subject}> ?p ?o
+        ?subject ?p ?o
       }
       WHERE {
-        <${subject}> ?p ?o
+#        <${subject}> ?p ?o
+        ?subject ?p ?o
         FILTER (?p=rdf:type || ?p=rdfs:label)
       }
     """;
