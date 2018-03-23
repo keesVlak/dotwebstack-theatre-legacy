@@ -1,5 +1,6 @@
 @prefix elmo: <http://dotwebstack.org/def/elmo#> .
 @prefix elmo-rt: <http://dotwebstack.org/def/elmo/result-type/>.
+@prefix elmo-ps: <http://dotwebstack.org/def/elmo/persistence-strategy/>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix config: <http://dotwebstack.org/configuration/>.
@@ -34,6 +35,10 @@ GRAPH config:Theatre {
   
   config:LOVBackend a elmo:SparqlBackend;
     elmo:endpoint "http://lov.okfn.org/dataset/lov/sparql"^^xsd:anyURI;
+  .
+  
+  config:LocalBackend a elmo:SparqlBackend;
+    elmo:endpoint "http://localhost:8890/sparql"^^xsd:anyURI
   .
 
 # ==========================
@@ -384,6 +389,113 @@ GRAPH config:Theatre {
         FILTER (lang(?province_label)="nl")
       }
     """;
+  .
+  
+# ==========================
+#
+# Editor
+#
+# ==========================
+
+  config:Editor a elmo:Representation;
+    elmo:stage config:Stage;
+    elmo:contains config:Menu;
+    elmo:pathPattern "/demo/editor";
+    elmo:appearance config:EditorAppearance;
+    elmo:informationProduct config:EditorData;
+  .
+  config:EditorAppearance a elmo:EditorAppearance;
+    elmo:fragment [
+      elmo:index 1;
+      elmo:appliesTo "@id";
+#      elmo:appearance elmo:HiddenAppearance;
+      rdfs:label "**URI"@en;
+      elmo:valueTemplate "http://concept/id/{name}" #Without a valueTemplate, a uuid URI will be generated
+    ];
+    elmo:fragment [
+      elmo:index 2;
+      elmo:appliesTo rdf:type;
+      rdf:value skos:Concept;
+      rdfs:label "**rdf:type"@en;
+    ];
+    elmo:fragment [
+      elmo:index 3;
+      elmo:name "name";
+      elmo:appliesTo skos:prefLabel;
+      rdfs:label "Name"@en;
+      rdfs:label "Naam"@nl;
+    ];
+    elmo:fragment [
+      elmo:index "4";
+      elmo:appliesTo skos:definition;
+      rdfs:label "Definitie"@nl;
+      rdfs:label "Definition"@en;
+      elmo:valueDatatype xsd:String;
+    ];
+    elmo:fragment [
+      elmo:index "5";
+      elmo:appliesTo "broader";
+      rdfs:label "Broader term"@en;
+      rdfs:label "Bredere term"@nl;
+      elmo:name "broader";
+    ];
+    elmo:fragment [
+      elmo:index "6";
+      elmo:appliesTo skos:broader;
+      rdfs:label "**skos:broader"@en;
+      elmo:valueTemplate "http://concept/id/{broader}";
+      elmo:valueDatatype rdfs:Resource;
+#      elmo:appearance elmo:HiddenAppearance;
+    ];
+    elmo:fragment [
+      elmo:appliesTo "dummy"; # dotwebstack requires an elmo:appliesTo for every fragment
+      elmo:appearance elmo:SubmitAppearance;
+      xhtml:link "/demo/editor/save";
+      rdfs:label "Opslaan"@nl;
+      rdfs:label "Save"@en;
+    ];
+  .
+  config:EditorData a elmo:InformationProduct;
+    elmo:backend config:LocalBackend;
+    elmo:query """
+      CONSTRUCT {
+        ?s ?p ?o
+      }
+      WHERE {
+        GRAPH <http://localhost:8080/demo/editor> {
+          ?s ?p ?o
+        }
+      }
+    """
+  .
+  
+  config:EditorTransactionEndpoint a elmo:Representation;
+    elmo:pathPattern "/demo/editor/save";
+    elmo:stage config:Stage;
+    elmo:transaction config:EditorTransaction
+  .
+
+  config:EditorTransaction a elmo:Transaction;
+    elmo:sequentialFlow (
+      [
+        a elmo:UpdateStep;
+        elmo:backend config:LocalBackend;
+        elmo:query "clear graph <http://localhost:8080/demo/editor>"
+      ]
+      [
+        a elmo:PersistenceStep;
+        elmo:persistenceStrategy elmo-ps:InsertIntoGraph;
+        elmo:backend config:LocalBackend;
+        elmo:targetGraph <http://localhost:8080/demo/editor>
+      ]
+    )
+  .
+
+  config:EditorDataRepresentation a elmo:Representation;
+    elmo:pathPattern "/demo/editor/data";
+    elmo:stage config:Stage;
+#    elmo:appearance [ a elmo:TurtleAppearance];
+    elmo:informationProduct config:EditorData;
   .
   
 }

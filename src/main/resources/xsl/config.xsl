@@ -42,6 +42,10 @@
 						<elmo:fragment rdf:nodeID="{@rdf:nodeID}"/>
 					</xsl:for-each>
 				</xsl:for-each>
+				<!-- Might go wrong with multiple appearances and multiple submit buttons -->
+				<xsl:for-each select="rdf:RDF/rdf:Description[elmo2:appearance/@rdf:resource='http://dotwebstack.org/def/elmo#SubmitAppearance']/xhtml:link">
+					<elmo:container><xsl:value-of select="."/></elmo:container>
+				</xsl:for-each>
 			</rdf:Description>
 		</xsl:for-each>
 
@@ -71,6 +75,12 @@
 				</xsl:for-each>
 				<xsl:for-each select="elmo2:service">
 					<elmo:service><xsl:value-of select="."/></elmo:service>
+				</xsl:for-each>
+				<xsl:for-each select="elmo2:valueDatatype">
+					<elmo:valueDatatype rdf:resource="{@rdf:resource}"/>
+				</xsl:for-each>
+				<xsl:for-each select="elmo2:valueTemplate">
+					<elmo:valueTemplate><xsl:value-of select="."/></elmo:valueTemplate>
 				</xsl:for-each>
 			</rdf:Description>
 		</xsl:for-each>

@@ -1,10 +1,10 @@
 <!--
 
     NAME     TextAppearance.xsl
-    VERSION  1.19.0
-    DATE     2017-10-16
+    VERSION  1.21.0
+    DATE     2018-03-19
 
-    Copyright 2012-2017
+    Copyright 2012-2018
 
     This file is part of the Linked Data Theatre.
 
