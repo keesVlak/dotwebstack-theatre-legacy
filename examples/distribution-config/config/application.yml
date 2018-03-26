@@ -18,6 +18,7 @@ dotwebstack:
     systemGraph: http://dotwebstack.org/configuration/Theatre
 
 security:
+  authentication: basic
   users:
     - user: user
       password: $2a$11$Z0uBLK6ocuMoqVYFUimZre./Y4iBq5v8IrhOVpR.oVJzJK6V7.lVu
