@@ -16,3 +16,15 @@ dotwebstack:
     host: localhost
     linkstrategy: global
     systemGraph: http://dotwebstack.org/configuration/Theatre
+
+security:
+  users:
+    - user: user
+      password: $2a$11$Z0uBLK6ocuMoqVYFUimZre./Y4iBq5v8IrhOVpR.oVJzJK6V7.lVu
+      role: USER
+    - user: user2
+      password: $2a$11$XmoBho2sMxvNfm7ogh/OdOX7EUF..s7fN96hVqqCGVCtE60xPzyI.
+      role: anders
+  protect:
+    - path: /demo/editor
+      role: USER

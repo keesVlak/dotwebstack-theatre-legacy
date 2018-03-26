@@ -497,5 +497,20 @@ GRAPH config:Theatre {
 #    elmo:appearance [ a elmo:TurtleAppearance];
     elmo:informationProduct config:EditorData;
   .
+
+  config:Login a elmo:Representation;
+    elmo:pathPattern "/login";
+    elmo:stage config:Stage;
+    elmo:appearance [ a elmo:LoginAppearance];
+    elmo:informationProduct config:LoginData;
+  .
   
+  config:LoginData a elmo:InformationProduct;
+    elmo:backend config:LocalBackend;
+    elmo:resultType elmo-rt:Tuple;
+    elmo:query """
+      SELECT *
+      WHERE {}
+    """
+  .
 }

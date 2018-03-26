@@ -79,6 +79,13 @@
       <artifactId>dotwebstack-frontend-openapi</artifactId>
       <version>${dotwebstack.framework.version}</version>
     </dependency>
+	<!-- Security dependency -->
+    <dependency>
+      <groupId>org.dotwebstack.framework</groupId>
+      <artifactId>dotwebstack-security</artifactId>
+      <version>${dotwebstack.framework.version}</version>
+    </dependency>
+	<!-- END -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
