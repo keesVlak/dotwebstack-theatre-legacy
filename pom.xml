@@ -79,12 +79,20 @@
       <artifactId>dotwebstack-frontend-openapi</artifactId>
       <version>${dotwebstack.framework.version}</version>
     </dependency>
-	<!-- Security dependency -->
+	<!-- Security dependency. Remove this to enable security -->
     <dependency>
       <groupId>org.dotwebstack.framework</groupId>
       <artifactId>dotwebstack-security</artifactId>
       <version>${dotwebstack.framework.version}</version>
     </dependency>
+	<!-- Unfortunately, a dependency exists to spring-security-web, even if security is not enabled -->
+	<!-- This is due to the getProperty of a CsrfToken (in Context.java) -->
+	<!-- We might refactor this from the framework in a way that the security framework can inject some property handler -->
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-web</artifactId>
+		<version>5.0.3.RELEASE</version>
+	</dependency>
 	<!-- END -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
