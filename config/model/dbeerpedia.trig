@@ -1,0 +1,107 @@
+@prefix dbeerpedia: <http://dbeerpedia.org#> .
+@prefix elmo: <http://dotwebstack.org/def/elmo#> .
+@prefix elmo-rt: <http://dotwebstack.org/def/elmo/result-type/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix config: <http://dotwebstack.org/configuration/>.
+@prefix elmo-sp: <http://dotwebstack.org/def/elmo/persistence-strategy/>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+
+GRAPH config:Theatre {
+
+  dbeerpedia:Stage a elmo:Stage;
+    elmo:site config:Site;
+    elmo:basePath "/dbp/ld/v1";
+  .
+
+  dbeerpedia:Backend a elmo:SparqlBackend;
+    elmo:endpoint "http://localhost:8890/sparql"^^xsd:anyURI;
+  .
+
+  dbeerpedia:GraphBreweryListEndpoint a elmo:Endpoint;
+    elmo:stage dbeerpedia:Stage;
+    elmo:pathPattern "/graph-breweries";
+    elmo:getRepresentation dbeerpedia:GraphBreweryListRepresentation;
+  .
+
+  dbeerpedia:GraphBreweryListRepresentation a elmo:Representation;
+    elmo:stage dbeerpedia:Stage;
+    elmo:informationProduct dbeerpedia:GraphBreweries;
+  .
+
+  dbeerpedia:TupleBreweryListEndpoint a elmo:Endpoint;
+    elmo:stage dbeerpedia:Stage;
+    elmo:pathPattern "/tuple-breweries";
+    elmo:getRepresentation dbeerpedia:TupleBreweryListRepresentation;
+  .
+
+  dbeerpedia:TupleBreweryListRepresentation a elmo:Representation;
+	  elmo:appearance dbeerpedia:TupleBeweryListAppearance;
+    elmo:stage dbeerpedia:Stage;
+    elmo:informationProduct dbeerpedia:TupleBreweries;
+  .
+  dbeerpedia:TupleBeweryListAppearance a elmo:TableAppearance;
+    elmo:fragment [
+	  elmo:appliesTo "name";
+	    rdfs:label "Naam"@en;
+    ];
+  .
+
+  dbeerpedia:TupleBreweries a elmo:InformationProduct;
+    rdfs:label "Beer breweries in The Netherlands";
+    elmo:backend dbeerpedia:Backend;
+    elmo:resultType elmo-rt:Tuple;
+    elmo:query "SELECT ?name WHERE { ?s rdfs:label ?name . ?s a <http://dbeerpedia.org#Brewery> }";
+  .
+
+  dbeerpedia:GraphBreweries a elmo:InformationProduct;
+    rdfs:label "Beer breweries in The Netherlands";
+    elmo:backend dbeerpedia:Backend;
+    elmo:query "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o . ?s a <http://dbeerpedia.org#Brewery> }";
+  .
+
+  dbeerpedia:TransactionEndpoint a elmo:Endpoint;
+    elmo:stage dbeerpedia:Stage;
+    elmo:pathPattern "/add-concept";
+    elmo:postService dbeerpedia:TransactionService;
+    elmo:putService dbeerpedia:TransactionService;
+    elmo:deleteService dbeerpedia:TransactionService;
+  .
+
+  dbeerpedia:TransactionService a elmo:Service;
+    elmo:stage dbeerpedia:Stage;
+    elmo:transaction dbeerpedia:InsertConcept;
+  .
+
+   # Transaction: replace resource from graph
+    dbeerpedia:InsertConcept a elmo:Transaction;
+      elmo:sequentialFlow (
+      dbeerpedia:ValidationStep
+      dbeerpedia:PersistenceStep
+      );
+    .
+    dbeerpedia:PersistenceStep a elmo:PersistenceStep;
+      elmo:persistenceStrategy elmo-sp:InsertIntoGraph;
+      elmo:backend dbeerpedia:Backend;
+      elmo:targetGraph <http://dotwebstack.org/all-concepts>;
+    .
+
+   dbeerpedia:ValidationStep a elmo:ValidationStep;
+      #rdfs:label "validation to check concept";
+      elmo:backend dbeerpedia:Backend;
+      elmo:conformsTo elmo:ConceptShapeGraph;
+   .
+}
+
+#Concept Shape graph
+GRAPH elmo:ConceptShapeGraph {
+	# Constraint: a concept should have a prefLabel
+	dbeerpedia:ConceptShape a sh:NodeShape;
+		sh:targetClass skos:Concept;
+		sh:property [
+			sh:path skos:prefLabel;
+			sh:minCount 1;
+		];
+	.
+}
+

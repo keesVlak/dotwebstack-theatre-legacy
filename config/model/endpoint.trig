@@ -1,0 +1,53 @@
+@prefix dbeerpedia: <http://dbeerpedia.org#> .
+@prefix elmo: <http://dotwebstack.org/def/elmo#> .
+@prefix elmo-rt: <http://dotwebstack.org/def/elmo/result-type/>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix config: <http://dotwebstack.org/configuration/>.
+@prefix http: <http://www.w3.org/2011/http#>.
+
+GRAPH config:Theatre {
+
+    config:SubjectFromUrl a elmo:UriParameterMapper;
+      elmo:source http:requestURI;
+      elmo:pattern "http://{domain}/id/{reference}";
+      elmo:template "http://dbpedia.org/resource/{reference}";
+      elmo:target elmo:SubjectParameter;
+    .
+
+config:DocEndpoint a elmo:DynamicEndpoint;
+      rdfs:label "label";
+      elmo:stage config:Stage;
+      elmo:pathPattern "/id/{reference}";
+      elmo:parameterMapper config:SubjectFromUrl;
+    .
+
+#    config:ResourceRepresentation a elmo:Representation;
+#      elmo:stage dbeerpedia:Stage;
+#      elmo:contains config:Menu;
+#      elmo:appliesTo "http://dbpedia.org/resource/{reference}";
+#      elmo:informationProduct config:DbpediaData;
+#    .
+
+  config:DbpediaData a elmo:InformationProduct;
+    elmo:backend config:DBPediaBackend;
+    elmo:requiredParameter elmo:SubjectParameter;
+    elmo:query """
+      PREFIX dbo: <http://dbpedia.org/ontology/>
+      CONSTRUCT {
+        ?subject ?p ?o
+      }
+      WHERE {
+        ?subject ?p ?o.
+        FILTER (?p = rdfs:label
+             || ?p = rdf:type
+             || ?p = dbo:abstract
+             || ?p = dbo:thumbnail
+        )
+        FILTER (IsIri(?o) || lang(?o)="en")
+      }
+    """;
+  .
+
+}
+
