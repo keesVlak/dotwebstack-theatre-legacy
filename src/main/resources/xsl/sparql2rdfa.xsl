@@ -1,10 +1,10 @@
 <!--
 
     NAME     sparql2rdfa.xsl
-    VERSION  1.19.0
-    DATE     2017-10-16
+    VERSION  1.21.0
+    DATE     2018-03-19
 
-    Copyright 2012-2017
+    Copyright 2012-2018
 
     This file is part of the Linked Data Theatre.
 
@@ -39,7 +39,7 @@
 	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
 >
-
+<!-- ADDED PARAM -->
 <xsl:param name="args"/>
 
 <xsl:key name="fragment" match="/root/view/representation[$args]/fragment" use="@applies-to"/> <!-- CHANGED: added '/view' -->

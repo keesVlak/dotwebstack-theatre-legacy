@@ -1,10 +1,10 @@
 <!--
 
     NAME     rdf2view.xsl
-    VERSION  1.19.2-SNAPSHOT
-    DATE     2017-11-30
+    VERSION  1.21.0
+    DATE     2018-03-19
 
-    Copyright 2012-2017
+    Copyright 2012-2018
 
     This file is part of the Linked Data Theatre.
 
@@ -221,7 +221,17 @@
 						<representation uri="{$repuri}" index="{$repindex}">
 							<xsl:if test="exists(elmo:endpoint[1])"><xsl:attribute name="endpoint"><xsl:value-of select="elmo:endpoint[1]/@rdf:resource"/></xsl:attribute></xsl:if>
 							<xsl:if test="exists(elmo:appearance[1])"><xsl:attribute name="appearance"><xsl:value-of select="elmo:appearance[1]/@rdf:resource"/></xsl:attribute></xsl:if>
-							<xsl:if test="exists(elmo:container[1])"><xsl:attribute name="container"><xsl:value-of select="elmo:container[1]/@rdf:resource"/></xsl:attribute></xsl:if>
+							<xsl:if test="exists(elmo:container[1])">
+								<xsl:choose>
+									<xsl:when test="elmo:container[1]/@rdf:resource!=''">
+										<xsl:attribute name="container"><xsl:value-of select="elmo:container[1]/@rdf:resource"/></xsl:attribute>
+									</xsl:when>
+									<xsl:when test="elmo:container[1]!=''">
+										<!-- Relative url to container -->
+										<xsl:attribute name="container"><xsl:value-of select="elmo:container[1]"/></xsl:attribute>
+									</xsl:when>
+								</xsl:choose>
+							</xsl:if>
 							<xsl:if test="exists(elmo:name[1])"><xsl:attribute name="name"><xsl:value-of select="elmo:name[1]"/></xsl:attribute></xsl:if>
 							<xsl:if test="exists(rdfs:label)"><xsl:attribute name="label"><xsl:apply-templates select="." mode="label"/></xsl:attribute></xsl:if>
 							<xsl:apply-templates select="elmo:queryForm"/>

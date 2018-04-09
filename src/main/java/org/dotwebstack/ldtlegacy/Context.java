@@ -14,7 +14,8 @@ public class Context {
 
   private static final String CONTEXT_TEMPLATE =
       "<context staticroot='/assets' linkstrategy='%s'>"
-          + "<title>%s</title><url>%s</url>%s</context>";
+          + "<title>%s</title><request-path>%s</request-path>"
+              + "<url>%s</url>%s</context>";
 
   private final String contextXml;
       
@@ -44,7 +45,7 @@ public class Context {
             layout.getOptions().get(XHTML.STYLESHEET).stringValue());
       }
     }
-    contextXml = String.format(CONTEXT_TEMPLATE, linkstrategy, title, fullUrl, stylesheet);
+    contextXml = String.format(CONTEXT_TEMPLATE, linkstrategy, title, path, fullUrl, stylesheet);
   }
 
   public String getContextXml() {

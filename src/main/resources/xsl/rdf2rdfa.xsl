@@ -1,10 +1,10 @@
 <!--
 
     NAME     rdf2rdfa.xsl
-    VERSION  1.19.2-SNAPSHOT
-    DATE     2017-12-11
+    VERSION  1.21.0
+    DATE     2018-03-19
 
-    Copyright 2012-2017
+    Copyright 2012-2018
 
     This file is part of the Linked Data Theatre.
 
@@ -253,6 +253,14 @@
 				<xsl:copy-of select="/root/results/rdf:RDF[position()=$index]/rdf:Description"/>
 			</xsl:when>
 			<xsl:when test="$appearance='http://bp4mc2.org/elmo/def#GraphAppearance'">
+				<xsl:for-each select="fragment">
+					<rdf:Description rdf:nodeID="f{position()}">
+						<xsl:if test="@applies-to!=''"><elmo:applies-to><xsl:value-of select="@applies-to"/></elmo:applies-to></xsl:if>
+						<xsl:copy-of select="*"/>
+					</rdf:Description>
+				</xsl:for-each>
+			</xsl:when>
+			<xsl:when test="$appearance='http://bp4mc2.org/elmo/def#EditorAppearance'">
 				<xsl:for-each select="fragment">
 					<rdf:Description rdf:nodeID="f{position()}">
 						<xsl:if test="@applies-to!=''"><elmo:applies-to><xsl:value-of select="@applies-to"/></elmo:applies-to></xsl:if>

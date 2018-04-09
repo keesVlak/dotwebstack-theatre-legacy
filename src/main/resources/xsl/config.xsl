@@ -22,23 +22,32 @@
 <xsl:template match="/">
 	<rdf:RDF>
 
-	<xsl:for-each select="appearances/appearance">
-		<xsl:variable name="appearance" select="app/@uri"/>
-		<xsl:variable name="representation" select="app/@rep"/>
-		<rdf:Description rdf:about="{$representation}">
-			<elmo:query>INFOPROD</elmo:query>
-			<xsl:for-each select="rdf:RDF/rdf:Description[@rdf:about=$appearance]">
-				<xsl:apply-templates select="." mode="type"/>
-				<xsl:for-each select="elmo2:index">
-					<elmo:index><xsl:value-of select="."/></elmo:index>
+		<xsl:for-each select="appearances/appearance">
+			<xsl:variable name="appearance">
+				<xsl:choose>
+					<xsl:when test="starts-with(app/@uri,'_:')"><xsl:value-of select="substring(app/@uri,3)"/></xsl:when>
+					<xsl:otherwise><xsl:value-of select="app/@uri"/></xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			<xsl:variable name="representation" select="app/@rep"/>
+			<rdf:Description rdf:about="{$representation}">
+				<elmo:query>INFOPROD</elmo:query>
+				<xsl:for-each select="rdf:RDF/rdf:Description[(@rdf:about|@rdf:nodeID)=$appearance]">
+					<xsl:apply-templates select="." mode="type"/>
+					<xsl:for-each select="elmo2:index">
+						<elmo:index><xsl:value-of select="."/></elmo:index>
+					</xsl:for-each>
+					<xsl:copy-of select="xhtml:stylesheet"/>
+					<xsl:for-each select="elmo2:fragment">
+						<elmo:fragment rdf:nodeID="{@rdf:nodeID}"/>
+					</xsl:for-each>
 				</xsl:for-each>
-				<xsl:copy-of select="xhtml:stylesheet"/>
-				<xsl:for-each select="elmo2:fragment">
-					<elmo:fragment rdf:nodeID="{@rdf:nodeID}"/>
+				<!-- Might go wrong with multiple appearances and multiple submit buttons -->
+				<xsl:for-each select="rdf:RDF/rdf:Description[elmo2:appearance/@rdf:resource='http://dotwebstack.org/def/elmo#SubmitAppearance']/xhtml:link">
+					<elmo:container><xsl:value-of select="."/></elmo:container>
 				</xsl:for-each>
-			</xsl:for-each>
-		</rdf:Description>
-	</xsl:for-each>
+			</rdf:Description>
+		</xsl:for-each>
 
 		<xsl:for-each select="appearances/appearance/rdf:RDF/rdf:Description[exists(elmo2:appliesTo)]">
 			<rdf:Description rdf:nodeID="{@rdf:nodeID}">
@@ -66,6 +75,12 @@
 				</xsl:for-each>
 				<xsl:for-each select="elmo2:service">
 					<elmo:service><xsl:value-of select="."/></elmo:service>
+				</xsl:for-each>
+				<xsl:for-each select="elmo2:valueDatatype">
+					<elmo:valueDatatype rdf:resource="{@rdf:resource}"/>
+				</xsl:for-each>
+				<xsl:for-each select="elmo2:valueTemplate">
+					<elmo:valueTemplate><xsl:value-of select="."/></elmo:valueTemplate>
 				</xsl:for-each>
 			</rdf:Description>
 		</xsl:for-each>

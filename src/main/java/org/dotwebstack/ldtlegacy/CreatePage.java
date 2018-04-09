@@ -25,8 +25,12 @@ import org.eclipse.rdf4j.query.resultio.sparqlxml.SPARQLResultsXMLWriter;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.rdfxml.RDFXMLWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CreatePage {
+
+  private static final Logger LOG = LoggerFactory.getLogger(CreatePage.class);
 
   public static void write(OutputStream outputStream, GraphEntity graphEntity,
                            String linkstrategy) throws IOException {
@@ -36,7 +40,8 @@ public class CreatePage {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
             throws Exception {
-          QueryResults.report(((GraphEntity) input).getQueryResult(),
+          QueryResults.report(
+              ((GraphEntity) input).getQueryResult(),
               new RDFXMLWriter(outputStream));
         }
       };
@@ -56,7 +61,8 @@ public class CreatePage {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
             throws Exception {
-          QueryResults.report(((TupleEntity) input).getQueryResult(),
+          QueryResults.report(
+              ((TupleEntity) input).getQueryResult(),
               new SPARQLResultsXMLWriter(outputStream));
         }
       };
@@ -85,7 +91,8 @@ public class CreatePage {
       }
       configMerger.finishMerging();
       //Translate to elmo1 vocabulary configuration
-      StartTerminal configPipe1 = new StartTerminal(null,
+      StartTerminal configPipe1 = new StartTerminal(
+          null,
           new ByteArrayInputStream(appearanceData.toByteArray())) {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
@@ -169,7 +176,8 @@ public class CreatePage {
       dataMerger.finishMerging();
       //Start new pipe with combined results and view
       //Merge view with context and original data
-      StartTerminal resultPipe1 = new StartTerminal(view,
+      StartTerminal resultPipe1 = new StartTerminal(
+          view,
           new ByteArrayInputStream(rdfData.toByteArray())) {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
@@ -226,8 +234,11 @@ public class CreatePage {
         Model model;
         if (input != null) {
           model = ((Appearance) input).getModel();
+          LOG.debug(String.format("Appearance: %s, type: %s", ((Appearance) input).getIdentifier(),
+              ((Appearance) input).getType()));
         } else {
           model = new LinkedHashModel();
+          LOG.debug("Appearance: none");
         }
         Rio.write(model, outputStream, RDFFormat.RDFXML);
       }
