@@ -6,7 +6,7 @@
 
   <groupId>org.dotwebstack.theatre</groupId>
   <artifactId>dotwebstack-theatre-legacy</artifactId>
-  <version>0.0.21-SNAPSHOT</version>
+  <version>0.0.26-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>dotwebstack-theatre-legacy</name>
