@@ -15,19 +15,19 @@ GRAPH config:Theatre {
       elmo:target elmo:SubjectParameter;
     .
 
-config:DocEndpoint a elmo:DynamicEndpoint;
+    config:DocEndpoint a elmo:DynamicEndpoint;
       rdfs:label "label";
       elmo:stage config:Stage;
       elmo:pathPattern "/id/{reference}";
       elmo:parameterMapper config:SubjectFromUrl;
     .
 
-#    config:ResourceRepresentation a elmo:Representation;
-#      elmo:stage dbeerpedia:Stage;
-#      elmo:contains config:Menu;
-#      elmo:appliesTo "http://dbpedia.org/resource/{reference}";
-#      elmo:informationProduct config:DbpediaData;
-#    .
+    config:ResourceRepresentation a elmo:Representation;
+      elmo:stage dbeerpedia:Stage;
+      elmo:contains config:Menu;
+      elmo:appliesTo "http://dbpedia.org/resource/{reference}";
+      elmo:informationProduct config:DbpediaData;
+    .
 
   config:DbpediaData a elmo:InformationProduct;
     elmo:backend config:DBPediaBackend;
