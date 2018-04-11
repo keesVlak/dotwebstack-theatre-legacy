@@ -15,9 +15,9 @@ public class HtmlInterceptorFilterRegistrar implements DynamicFeature {
   @Override
   public void configure(ResourceInfo resourceInfo, FeatureContext context) {
     if (DirectEndPointRequestHandler.class.equals(resourceInfo.getResourceClass())
-        && resourceInfo.getResourceMethod().getName().equals("apply") ||
-        DynamicEndPointRequestHandler.class.equals(resourceInfo.getResourceClass()) &&
-            resourceInfo.getResourceMethod().getName().equals("apply")) {
+        && resourceInfo.getResourceMethod().getName().equals("apply")
+        || DynamicEndPointRequestHandler.class.equals(resourceInfo.getResourceClass())
+        && resourceInfo.getResourceMethod().getName().equals("apply")) {
       context.register(HtmlWriterInterceptor.class);
       context.register(LegacyResponseFilter.class);
       LOG.info("Registered Interceptor and Filter for requestcontext passing");
