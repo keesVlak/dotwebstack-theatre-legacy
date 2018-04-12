@@ -28,7 +28,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
-    <saxon.version>9.1.0.8</saxon.version>
+    <saxon.version>9.8.0-1</saxon.version>
     <dotwebstack.framework.version>0.0.24</dotwebstack.framework.version>
   </properties>
 
@@ -43,8 +43,13 @@
   <dependencies>
     <dependency>
       <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon</artifactId>
+      <artifactId>Saxon-HE</artifactId>
       <version>${saxon.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.7</version>
     </dependency>
     <dependency>
       <groupId>com.github.rjeschke</groupId>
