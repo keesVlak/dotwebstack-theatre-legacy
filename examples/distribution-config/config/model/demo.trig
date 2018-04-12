@@ -36,7 +36,7 @@ GRAPH config:Theatre {
   config:LOVBackend a elmo:SparqlBackend;
     elmo:endpoint "http://lov.okfn.org/dataset/lov/sparql"^^xsd:anyURI;
   .
-  
+
   config:LocalBackend a elmo:SparqlBackend;
     elmo:endpoint "http://localhost:8890/sparql"^^xsd:anyURI
   .
