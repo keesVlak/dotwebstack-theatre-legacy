@@ -80,13 +80,11 @@
       <version>${dotwebstack.framework.version}</version>
     </dependency>
 	<!-- Security dependency. Remove this to enable security -->
-	<!--
     <dependency>
-      <groupId>org.dotwebstack.framework</groupId>
-      <artifactId>dotwebstack-security</artifactId>
-      <version>${dotwebstack.framework.version}</version>
+      <groupId>org.dotwebstack.theatre</groupId>
+      <artifactId>dotwebstack-theatre-security</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
     </dependency>
-	-->
 	<!-- END Security dependency -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
