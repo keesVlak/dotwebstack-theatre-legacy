@@ -76,7 +76,7 @@ GRAPH config:Theatre {
    # Transaction: replace resource from graph
     dbeerpedia:InsertConcept a elmo:Transaction;
       elmo:sequentialFlow (
-    #  dbeerpedia:ValidationStep
+      dbeerpedia:ValidationStep
       dbeerpedia:PersistenceStep
       );
     .
@@ -86,11 +86,10 @@ GRAPH config:Theatre {
       elmo:targetGraph <http://dotwebstack.org/all-concepts>;
     .
 
-  # dbeerpedia:ValidationStep a elmo:ValidationStep;
-   #   rdfs:label "validation to check concept";
-    #  elmo:backend dbeerpedia:Backend;
-    #  elmo:conformsTo elmo:ConceptShapeGraph;
-   #.
+   dbeerpedia:ValidationStep a elmo:ValidationStep;
+      rdfs:label "validation to check concept";
+      elmo:conformsTo elmo:ConceptShapeGraph;
+   .
 }
 
 #Concept Shape graph
