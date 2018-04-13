@@ -18,7 +18,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/examples/distribution-config</directory>
+      <directory>${project.basedir}</directory>
       <outputDirectory></outputDirectory>
       <includes>
         <include>config/**</include>

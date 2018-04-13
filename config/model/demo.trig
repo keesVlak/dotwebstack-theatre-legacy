@@ -62,7 +62,7 @@ GRAPH config:Theatre {
       CONSTRUCT {
         [] rdfs:label "Demo";
           xhtml:search "search";
-          elmo1:data [elmo1:index "1"; rdfs:label "Menu 1"]
+          elmo1:data [elmo1:index "1"; rdfs:label "Editor"; xhtml:link "demo/editor"]
         .
       }
       WHERE {}
@@ -144,8 +144,13 @@ GRAPH config:Theatre {
 #
 # ==========================
 
-  config:Homepage a elmo:Representation;
+  config:HomepageEndpoint a elmo:Endpoint;
     elmo:pathPattern "";
+    elmo:stage config:Stage;
+    elmo:getRepresentation config:Homepage;
+  .
+
+  config:Homepage a elmo:Representation;
     elmo:stage config:Stage;
     elmo:informationProduct config:HomepageData;
     elmo:appearance [a elmo:HtmlAppearance];
@@ -182,8 +187,13 @@ GRAPH config:Theatre {
 #
 # ==========================
 
-  config:DBPediaResource a elmo:Representation;
+  config:DBPediaResourceEndpoint a elmo:Endpoint;
     elmo:pathPattern "/demo/resource";
+    elmo:stage config:Stage;
+    elmo:getRepresentation config:DBPediaResource;
+  .
+
+  config:DBPediaResource a elmo:Representation;
     elmo:stage config:Stage;
     elmo:informationProduct config:DBPediaResourceData;
   .
@@ -216,8 +226,13 @@ GRAPH config:Theatre {
 #
 # ==========================
 
-  config:Amersfoort a elmo:Representation;
+config:AmersfoortEndpoint a elmo:Endpoint;
     elmo:pathPattern "/demo/amersfoort";
+    elmo:stage config:Stage;
+    elmo:getRepresentation config:Amersfoort;
+  .
+
+  config:Amersfoort a elmo:Representation;
     elmo:stage config:Stage;
     elmo:contains config:Menu;
     elmo:contains config:FormatIndex;
@@ -267,7 +282,7 @@ GRAPH config:Theatre {
       }
     """;
   .
-  
+
   config:Glossary a elmo:Representation;
     elmo:stage config:Stage;
     elmo:appearance config:GlossaryAppearance;
@@ -292,20 +307,31 @@ GRAPH config:Theatre {
 #
 # ==========================
 
+ config:SearchEndpoint a elmo:Endpoint;
+     elmo:pathPattern "/search";
+      elmo:stage config:Stage;
+      elmo:getRepresentation config:Search;
+    .
+
   config:Search a elmo:Representation;
-    elmo:pathPattern "/search";
     elmo:stage config:Stage;
     elmo:contains config:Menu;
     elmo:informationProduct config:SearchData;
   .
-  config:SearchInPath a elmo:Representation;
+
+   config:SearchInPathEndpoint a elmo:Endpoint;
     elmo:pathPattern "/search/{term}";
-    elmo:parameterMapper config:SubjectFromUrl;
+        elmo:stage config:Stage;
+        elmo:getRepresentation config:SearchInPath;
+      .
+
+  config:SearchInPath a elmo:Representation;
+    elmo:parameterMapper config:TermFromUrl;
     elmo:stage config:Stage;
     elmo:contains config:Menu;
     elmo:informationProduct config:SearchData;
   .
-  config:SubjectFromUrl a elmo:UriParameterMapper;
+  config:TermFromUrl a elmo:UriParameterMapper;
     elmo:source http:requestURI;
     elmo:pattern "http://{domain}/search/{term}";
     elmo:template "{term}";
@@ -337,8 +363,13 @@ GRAPH config:Theatre {
 #
 # ==========================
 
-  config:Places a elmo:Representation;
+  config:PlacesEndpoint a elmo:Endpoint;
     elmo:pathPattern "/demo/places";
+    elmo:stage config:Stage;
+    elmo:getRepresentation config:Places;
+  .
+
+  config:Places a elmo:Representation;
     elmo:stage config:Stage;
     elmo:contains config:PlacesTree;
     elmo:contains config:Menu;
@@ -363,6 +394,7 @@ GRAPH config:Theatre {
   #
   # Places tree
   #
+
   config:PlacesTree a elmo:Representation;
     elmo:stage config:Stage;
     elmo:appearance config:PlacesTreeAppearance;
@@ -397,10 +429,15 @@ GRAPH config:Theatre {
 #
 # ==========================
 
+  config:EditorEndpoint a elmo:Endpoint;
+    elmo:pathPattern "/demo/editor";
+    elmo:stage config:Stage;
+    elmo:getRepresentation config:Editor;
+  .
+
   config:Editor a elmo:Representation;
     elmo:stage config:Stage;
     elmo:contains config:Menu;
-    elmo:pathPattern "/demo/editor";
     elmo:appearance config:EditorAppearance;
     elmo:informationProduct config:EditorData;
   .
@@ -469,9 +506,13 @@ GRAPH config:Theatre {
     """
   .
   
-  config:EditorTransactionEndpoint a elmo:Representation;
+  config:EditorTransactionEndpoint a elmo:Endpoint;
     elmo:pathPattern "/demo/editor/save";
     elmo:stage config:Stage;
+    elmo:postService config:EditorTransactionService
+  .
+  
+  config:EditorTransactionService a elmo:Service;
     elmo:transaction config:EditorTransaction
   .
 
