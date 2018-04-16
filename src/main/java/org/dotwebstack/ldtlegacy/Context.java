@@ -1,11 +1,9 @@
 package org.dotwebstack.ldtlegacy;
 
 import java.net.URI;
+import java.util.Map;
 import javax.ws.rs.container.ContainerRequestContext;
 import lombok.NonNull;
-//import org.dotwebstack.framework.frontend.ld.entity.TupleEntity;
-//import org.dotwebstack.framework.frontend.ld.representation.Representation;
-//import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.dotwebstack.framework.frontend.http.layout.Layout;
 import org.dotwebstack.framework.frontend.http.stage.Stage;
 import org.dotwebstack.ldtlegacy.vocabulary.XHTML;
@@ -15,12 +13,12 @@ public class Context {
   private static final String CONTEXT_TEMPLATE =
       "<context staticroot='/assets' linkstrategy='%s'>"
           + "<title>%s</title><request-path>%s</request-path>"
-              + "<url>%s</url>%s</context>";
+              + "<url>%s</url><subject>%s</subject>%s</context>";
 
   private final String contextXml;
       
   public Context(@NonNull ContainerRequestContext containerRequestContext, String linkstrategy,
-      Stage stage) {
+      Stage stage, Map<String, String> parameterValues) {
 
     URI uri = containerRequestContext.getUriInfo().getAbsolutePath();
 
@@ -45,7 +43,12 @@ public class Context {
             layout.getOptions().get(XHTML.STYLESHEET).stringValue());
       }
     }
-    contextXml = String.format(CONTEXT_TEMPLATE, linkstrategy, title, path, fullUrl, stylesheet);
+    String subject = "";
+    if (parameterValues.containsKey("subject")) {
+      subject = parameterValues.get("subject");
+    }
+    contextXml = String.format(CONTEXT_TEMPLATE, linkstrategy, title, path, fullUrl, subject,
+        stylesheet);
   }
 
   public String getContextXml() {
