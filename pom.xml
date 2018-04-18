@@ -30,8 +30,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
-    <saxon.version>9.8.0-1</saxon.version>
-    <dotwebstack.framework.version>0.0.24</dotwebstack.framework.version>
+    <saxon.version>9.1.0.8</saxon.version>
+    <dotwebstack.framework.version>0.0.26-SNAPSHOT</dotwebstack.framework.version>
   </properties>
 
   <repositories>
@@ -43,11 +43,6 @@
   </repositories>
 
   <dependencies>
-    <dependency>
-      <groupId>net.sf.saxon</groupId>
-      <artifactId>Saxon-HE</artifactId>
-      <version>${saxon.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
@@ -90,6 +85,11 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>${saxon.version}</version>
     </dependency>
   </dependencies>
 
