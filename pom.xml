@@ -6,7 +6,7 @@
 
   <groupId>org.dotwebstack.theatre</groupId>
   <artifactId>dotwebstack-theatre-legacy</artifactId>
-  <version>0.0.27-SNAPSHOT</version>
+  <version>0.0.28-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>dotwebstack-theatre-legacy</name>
@@ -31,7 +31,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <saxon.version>9.1.0.8</saxon.version>
-    <dotwebstack.framework.version>0.0.26-SNAPSHOT</dotwebstack.framework.version>
+    <dotwebstack.framework.version>0.0.28-SNAPSHOT</dotwebstack.framework.version>
   </properties>
 
   <repositories>
