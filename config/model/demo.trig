@@ -9,6 +9,7 @@
 @prefix xhtml: <http://www.w3.org/1999/xhtml/vocab#>.
 @prefix http: <http://www.w3.org/2011/http#>.
 @prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
 
 GRAPH config:Theatre {
 
@@ -62,7 +63,7 @@ GRAPH config:Theatre {
       CONSTRUCT {
         [] rdfs:label "Demo";
           xhtml:search "search";
-          elmo1:data [elmo1:index "1"; rdfs:label "Editor"; xhtml:link "demo/editor"]
+          elmo1:data [elmo1:index "1"; rdfs:label "Editor"; xhtml:link "demo/editor?subject=http://localhost/id/scheme/proef"]
         .
       }
       WHERE {}
@@ -494,9 +495,11 @@ config:AmersfoortEndpoint a elmo:Endpoint;
   .
   config:EditorData a elmo:InformationProduct;
     elmo:backend config:LocalBackend;
+    elmo:requiredParameter elmo:SubjectParameter;
     elmo:query """
       CONSTRUCT {
-        ?s ?p ?o
+        ?s ?p ?o.
+        ?s skos:inScheme ?subject
       }
       WHERE {
         GRAPH <http://localhost:8080/demo/editor> {
@@ -598,6 +601,12 @@ config:AmersfoortEndpoint a elmo:Endpoint;
       rdfs:label "**skos:broader"@en;
       elmo:valueTemplate "http://concept/id/{broader}";
       elmo:valueDatatype rdfs:Resource;
+#      elmo:appearance elmo:HiddenAppearance;
+    ];
+    elmo:fragment [
+      elmo:index "7";
+      elmo:appliesTo skos:inScheme;
+      rdfs:label "**skos:inScheme"@en;
 #      elmo:appearance elmo:HiddenAppearance;
     ];
     elmo:fragment [
