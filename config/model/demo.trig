@@ -63,7 +63,8 @@ GRAPH config:Theatre {
       CONSTRUCT {
         [] rdfs:label "Demo";
           xhtml:search "search";
-          elmo1:data [elmo1:index "1"; rdfs:label "Editor"; xhtml:link "demo/editor?subject=http://localhost/id/scheme/proef"]
+          elmo1:data [elmo1:index "1"; rdfs:label "Editor"; xhtml:link "demo/editor?subject=http://localhost/id/scheme/proef"];
+          elmo1:data [elmo1:index "1"; rdfs:label "Editor2"; xhtml:link "demo/editor2?subject=http://localhost/id/scheme/proef"]
         .
       }
       WHERE {}
@@ -512,7 +513,7 @@ config:AmersfoortEndpoint a elmo:Endpoint;
   config:EditorTransactionEndpoint a elmo:Endpoint;
     elmo:pathPattern "/demo/editor/save";
     elmo:stage config:Stage;
-    elmo:postService config:EditorTransactionService
+    elmo:putService config:EditorTransactionService
   .
   
   config:EditorTransactionService a elmo:Service;
