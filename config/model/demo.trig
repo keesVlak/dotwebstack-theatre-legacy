@@ -9,6 +9,7 @@
 @prefix xhtml: <http://www.w3.org/1999/xhtml/vocab#>.
 @prefix http: <http://www.w3.org/2011/http#>.
 @prefix dc: <http://purl.org/dc/elements/1.1/>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
 
 GRAPH config:Theatre {
 
@@ -62,7 +63,8 @@ GRAPH config:Theatre {
       CONSTRUCT {
         [] rdfs:label "Demo";
           xhtml:search "search";
-          elmo1:data [elmo1:index "1"; rdfs:label "Editor"; xhtml:link "demo/editor"]
+          elmo1:data [elmo1:index "1"; rdfs:label "Editor"; xhtml:link "demo/editor?subject=http://localhost/id/scheme/proef"];
+          elmo1:data [elmo1:index "1"; rdfs:label "Editor2"; xhtml:link "demo/editor2?subject=http://localhost/id/scheme/proef"]
         .
       }
       WHERE {}
@@ -494,9 +496,11 @@ config:AmersfoortEndpoint a elmo:Endpoint;
   .
   config:EditorData a elmo:InformationProduct;
     elmo:backend config:LocalBackend;
+    elmo:requiredParameter elmo:SubjectParameter;
     elmo:query """
       CONSTRUCT {
-        ?s ?p ?o
+        ?s ?p ?o.
+        ?s skos:inScheme ?subject
       }
       WHERE {
         GRAPH <http://localhost:8080/demo/editor> {
@@ -509,7 +513,7 @@ config:AmersfoortEndpoint a elmo:Endpoint;
   config:EditorTransactionEndpoint a elmo:Endpoint;
     elmo:pathPattern "/demo/editor/save";
     elmo:stage config:Stage;
-    elmo:postService config:EditorTransactionService
+    elmo:putService config:EditorTransactionService
   .
   
   config:EditorTransactionService a elmo:Service;
@@ -539,4 +543,196 @@ config:AmersfoortEndpoint a elmo:Endpoint;
     elmo:informationProduct config:EditorData;
   .
   
+# ==========================
+#
+# Editor (with delta update)
+#
+# ==========================
+
+  config:Editor2Endpoint a elmo:Endpoint;
+    elmo:pathPattern "/demo/editor2";
+    elmo:stage config:Stage;
+    elmo:getRepresentation config:Editor2;
+  .
+
+  config:Editor2 a elmo:Representation;
+    elmo:stage config:Stage;
+    elmo:contains config:Menu;
+    elmo:appearance config:Editor2Appearance;
+    elmo:informationProduct config:EditorData;
+  .
+  config:Editor2Appearance a elmo:EditorAppearance;
+    elmo:fragment [
+      elmo:index 1;
+      elmo:appliesTo "@id";
+#      elmo:appearance elmo:HiddenAppearance;
+      rdfs:label "**URI"@en;
+      elmo:valueTemplate "http://concept/id/{name}" #Without a valueTemplate, a uuid URI will be generated
+    ];
+    elmo:fragment [
+      elmo:index 2;
+      elmo:appliesTo rdf:type;
+      rdf:value skos:Concept;
+      rdfs:label "**rdf:type"@en;
+    ];
+    elmo:fragment [
+      elmo:index 3;
+      elmo:name "name";
+      elmo:appliesTo skos:prefLabel;
+      rdfs:label "Name"@en;
+      rdfs:label "Naam"@nl;
+    ];
+    elmo:fragment [
+      elmo:index "4";
+      elmo:appliesTo skos:definition;
+      rdfs:label "Definitie"@nl;
+      rdfs:label "Definition"@en;
+      elmo:valueDatatype xsd:String;
+    ];
+    elmo:fragment [
+      elmo:index "5";
+      elmo:appliesTo "broader";
+      rdfs:label "Broader term"@en;
+      rdfs:label "Bredere term"@nl;
+      elmo:name "broader";
+    ];
+    elmo:fragment [
+      elmo:index "6";
+      elmo:appliesTo skos:broader;
+      rdfs:label "**skos:broader"@en;
+      elmo:valueTemplate "http://concept/id/{broader}";
+      elmo:valueDatatype rdfs:Resource;
+#      elmo:appearance elmo:HiddenAppearance;
+    ];
+    elmo:fragment [
+      elmo:index "7";
+      elmo:appliesTo skos:inScheme;
+      rdfs:label "**skos:inScheme"@en;
+#      elmo:appearance elmo:HiddenAppearance;
+    ];
+    elmo:fragment [
+      elmo:appliesTo "dummy"; # dotwebstack requires an elmo:appliesTo for every fragment
+      elmo:appearance elmo:ChangeSubmitAppearance;
+      xhtml:link "/demo/editor2/save";
+      rdfs:label "Opslaan (delta)"@nl;
+      rdfs:label "Save (delta)"@en;
+    ];
+  .
+  
+  config:Editor2TransactionEndpoint a elmo:Endpoint;
+    elmo:pathPattern "/demo/editor2/save";
+    elmo:stage config:Stage;
+    elmo:postService config:EditorInsertTransactionService;
+    elmo:putService config:EditorChangeTransactionService;
+    elmo:deleteService config:EditorDeleteTransactionService
+  .
+  
+  config:EditorInsertTransactionService a elmo:Service;
+    elmo:transaction config:EditorInsertTransaction
+  .
+  config:EditorChangeTransactionService a elmo:Service;
+    elmo:transaction config:EditorChangeTransaction
+  .
+  config:EditorDeleteTransactionService a elmo:Service;
+    elmo:transaction config:EditorDeleteTransaction
+  .
+
+  config:EditorInsertTransaction a elmo:Transaction;
+    elmo:sequentialFlow (
+      [
+        a elmo:PersistenceStep;
+        elmo:persistenceStrategy elmo-ps:InsertIntoGraph;
+        elmo:backend config:LocalBackend;
+        elmo:targetGraph <http://localhost:8080/demo/editor>
+      ]
+    )
+  .
+
+  config:EditorChangeTransaction a elmo:Transaction;
+    elmo:sequentialFlow (
+      [
+        a elmo:UpdateStep;
+        elmo:backend config:LocalBackend;
+        elmo:query "clear graph <http://localhost:8080/demo/editor.tmp>"
+      ]
+      [
+        a elmo:PersistenceStep;
+        elmo:persistenceStrategy elmo-ps:InsertIntoGraph;
+        elmo:backend config:LocalBackend;
+        elmo:targetGraph <http://localhost:8080/demo/editor.tmp>
+      ]
+      [
+        a elmo:UpdateStep;
+        elmo:backend config:LocalBackend;
+        elmo:query """
+          delete {
+            graph <http://localhost:8080/demo/editor> {
+              ?s ?p ?o
+            }
+          }
+          where {
+            graph <http://localhost:8080/demo/editor> {
+              ?s ?p ?o
+            }
+            graph <http://localhost:8080/demo/editor.tmp> {
+              ?s a ?t
+            }
+          }
+        """
+      ]
+      [
+        a elmo:UpdateStep;
+        elmo:backend config:LocalBackend;
+        elmo:query """
+          insert {
+            graph <http://localhost:8080/demo/editor> {
+              ?s ?p ?o
+            }
+          }
+          where {
+            graph <http://localhost:8080/demo/editor.tmp> {
+              ?s ?p ?o
+            }
+          }
+        """
+      ]
+    )
+  .
+
+  config:EditorDeleteTransaction a elmo:Transaction;
+    elmo:sequentialFlow (
+      [
+        a elmo:UpdateStep;
+        elmo:backend config:LocalBackend;
+        elmo:query "clear graph <http://localhost:8080/demo/editor.tmp>"
+      ]
+      [
+        a elmo:PersistenceStep;
+        elmo:persistenceStrategy elmo-ps:InsertIntoGraph;
+        elmo:backend config:LocalBackend;
+        elmo:targetGraph <http://localhost:8080/demo/editor.tmp>
+      ]
+      [
+        a elmo:UpdateStep;
+        elmo:backend config:LocalBackend;
+        elmo:query """
+          prefix prov: <http://www.w3.org/ns/prov#>
+          delete {
+            graph <http://localhost:8080/demo/editor> {
+              ?s ?p ?o
+            }
+          }
+          where {
+            graph <http://localhost:8080/demo/editor> {
+              ?s ?p ?o
+            }
+            graph <http://localhost:8080/demo/editor.tmp> {
+              ?s prov:invalidatedAtTime ?t
+            }
+          }
+        """
+      ]
+    )
+  .
+
 }

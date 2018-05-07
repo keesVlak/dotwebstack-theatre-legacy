@@ -101,9 +101,16 @@ public class CreatePage {
               new StreamResult(outputStream));
         }
       };
+      // get parameters
+      Map<String, String> parameterValues = new HashMap<>();
+      containerRequestContext.getUriInfo().getQueryParameters().forEach((name, value) -> {
+        if (!value.isEmpty()) {
+          parameterValues.put(name, value.get(0));
+        }
+      });
       //Merge configuration result with context (empty at this moment)
       Context context = new Context(containerRequestContext, linkstrategy,
-          representation.getStage());
+          representation.getStage(), parameterValues);
       Pipe configPipe2 = new Pipe(configPipe1) {
         @Override
         public void filter(Object input, InputStream inputStream, OutputStream outputStream)
@@ -159,13 +166,6 @@ public class CreatePage {
       };
       //Start the datapipe
       dataPipe3.start();
-      // get parameters
-      Map<String, String> parameterValues = new HashMap<>();
-      containerRequestContext.getUriInfo().getQueryParameters().forEach((name, value) -> {
-        if (!value.isEmpty()) {
-          parameterValues.put(name, value.get(0));
-        }
-      });
       //Fetch data from all sub representations. The result will be part of the rdfData stream.
       int index = 1;
       for (Representation subRepresentation : representation.getSubRepresentations()) {
