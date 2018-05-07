@@ -7,7 +7,7 @@ basePath: /dbp/api/v1
 produces:
   - application/json
 paths:
-  /post-concept:
+  /concept:
     post:
       x-dotwebstack-transaction: "http://dbeerpedia.org#InsertConcept"
       consumes:
@@ -39,6 +39,42 @@ paths:
             type: array
             items:
               type: object
+    put:
+      x-dotwebstack-transaction: "http://dbeerpedia.org#InsertConcept"
+      consumes:
+        - application/json
+      parameters:
+        - name: term
+          in: query
+          description: filter on starting letter of the concept
+          required: false
+          type: string
+          x-dotwebstack-parameter: "http://dbeerpedia.org#TermParameter"
+        - name: body
+          in: body
+          description: body
+          required: true
+          type: string
+          x-dotwebstack-rml-mapping: "http://dbeerpedia.org#RmlMapping"
+          schema:
+            type: object
+            properties:
+              cars:
+                type: array
+              name:
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              type: object
+    get:
+      x-dotwebstack-information-product: "http://dbeerpedia.org#TupleConcept"
+      responses:
+        200:
+          description: OK
   /breweries:
     get:
       x-dotwebstack-information-product: "http://dbeerpedia.org#TupleBreweries"

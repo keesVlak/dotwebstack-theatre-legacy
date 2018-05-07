@@ -65,6 +65,13 @@ GRAPH config:Theatre {
     elmo:query "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o . ?s a <http://dbeerpedia.org#Brewery> }";
   .
 
+  dbeerpedia:TupleConcept a elmo:InformationProduct;
+    rdfs:label "Beer breweries in The Netherlands";
+    elmo:backend dbeerpedia:Backend;
+    elmo:resultType elmo-rt:Tuple;
+    elmo:query "SELECT ?name WHERE { ?s rdfs:label ?name . ?s a <http://dbeerpedia.org#Concept> }";
+  .
+
   dbeerpedia:TransactionEndpoint a elmo:Endpoint;
     elmo:stage dbeerpedia:Stage;
     elmo:pathPattern "/add-concept";
