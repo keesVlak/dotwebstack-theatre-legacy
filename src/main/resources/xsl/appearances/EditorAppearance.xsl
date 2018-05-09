@@ -2,7 +2,7 @@
 
     NAME     EditorAppearance.xsl
     VERSION  1.21.1-SNAPSHOT
-    DATE     2018-03-26
+    DATE     2018-04-22
 
     Copyright 2012-2018
 
@@ -47,16 +47,22 @@
 	<link rel="stylesheet" href="{$staticroot}/css/slick.grid.pkg.min.css" type="text/css"/> 
 	<link rel="stylesheet" href="{$staticroot}/css/slickgrid-ldt.min.css" type="text/css"/> 
 	<xsl:if test="$container!=''">
-		<xsl:for-each select="rdf:Description[exists(@rdf:nodeID) and elmo:appearance/@rdf:resource='http://bp4mc2.org/elmo/def#SubmitAppearance']">
+		<xsl:for-each select="rdf:Description[exists(@rdf:nodeID) and (elmo:appearance/@rdf:resource='http://bp4mc2.org/elmo/def#SubmitAppearance' or elmo:appearance/@rdf:resource='http://bp4mc2.org/elmo/def#ChangeSubmitAppearance')]">
 			<div class="form-group">
+				<xsl:variable name="submitaction">
+					<xsl:choose>
+						<xsl:when test="elmo:appearance/@rdf:resource='http://bp4mc2.org/elmo/def#ChangeSubmitAppearance'">saveChangedGrid</xsl:when>
+						<xsl:otherwise>saveGrid</xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>
 				<xsl:variable name="blabel"><xsl:call-template name="normalize-language"><xsl:with-param name="text" select="rdfs:label"/></xsl:call-template></xsl:variable>
 				<label for="btn{position()}" class="control-label col-sm-2"/>
 				<div class="col-sm-10">
-					<button id="btn{position()}" type="submit" class="btn btn-primary pull-right" onClick="saveGrid(); return false;"><xsl:value-of select="$blabel"/></button>
+					<button id="btn{position()}" type="submit" class="btn btn-primary pull-right" onClick="{$submitaction}(); return false;"><xsl:value-of select="$blabel"/></button>
 				</div>
 			</div>
 		</xsl:for-each>
-		<xsl:if test="not(exists(rdf:Description[exists(@rdf:nodeID) and elmo:appearance/@rdf:resource='http://bp4mc2.org/elmo/def#SubmitAppearance']))">
+		<xsl:if test="not(exists(rdf:Description[exists(@rdf:nodeID) and (elmo:appearance/@rdf:resource='http://bp4mc2.org/elmo/def#SubmitAppearance' or elmo:appearance/@rdf:resource='http://bp4mc2.org/elmo/def#ChangeSubmitAppearance')]))">
 			<div class="form-group">
 				<label for="btn-save" class="control-label col-sm-2"/>
 				<div class="col-sm-10">
@@ -72,8 +78,9 @@
 	<script>
 		var staticroot = "<xsl:value-of select="$staticroot"/>";
 		var containerurl = "<xsl:value-of select="$container"/>";
+		var subjecturi = "<xsl:value-of select="/results/context/subject"/>";
 		//var apicall = "<xsl:value-of select="$docroot"/><xsl:value-of select="$subdomain"/>/resource.json?representation=<xsl:value-of select="encode-for-uri(@elmo:query)"/>&amp;subject=<xsl:value-of select="/results/context/subject"/>";
-		var apicall = "<xsl:value-of select="/results/context/request-path"/>?subject=<xsl:value-of select="/results/context/subject"/>";
+		var apicall = "<xsl:value-of select="/results/context/request-path"/>";
 		var defaultItem = {
 			<xsl:for-each select="rdf:Description[exists(rdf:value)]">
 				<xsl:if test="position()!=1">,</xsl:if>
@@ -114,7 +121,7 @@
 				focusable: false,
 				formatter: statusFormatter
 			}
-		<xsl:for-each select="rdf:Description[not(elmo:appearance/@rdf:resource='http://bp4mc2.org/elmo/def#SubmitAppearance' or elmo:appearance/@rdf:resource='http://bp4mc2.org/elmo/def#HiddenAppearance')]"><xsl:sort select="elmo:index"/>
+		<xsl:for-each select="rdf:Description[not(elmo:appearance/@rdf:resource='http://bp4mc2.org/elmo/def#SubmitAppearance' or elmo:appearance/@rdf:resource='http://bp4mc2.org/elmo/def#ChangeSubmitAppearance')]"><xsl:sort select="elmo:index"/>
 			<xsl:variable name="label"><xsl:call-template name="normalize-language"><xsl:with-param name="text" select="rdfs:label"/></xsl:call-template></xsl:variable>
 			<xsl:variable name="editor">
 				<xsl:choose>
