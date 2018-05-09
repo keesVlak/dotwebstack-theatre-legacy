@@ -18,6 +18,10 @@ GRAPH config:Theatre {
     elmo:endpoint "http://localhost:8890/sparql"^^xsd:anyURI;
   .
 
+  dbeerpedia:MyBackend a elmo:SparqlBackend;
+      elmo:endpoint "http://localhost:8890/sparql"^^xsd:anyURI;
+    .
+
   dbeerpedia:GraphBreweryListEndpoint a elmo:Endpoint;
     elmo:stage dbeerpedia:Stage;
     elmo:pathPattern "/graph-breweries";

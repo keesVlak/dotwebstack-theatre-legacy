@@ -13,7 +13,7 @@ GRAPH config:Theatre {
   dbeerpedia:InsertConcept a elmo:Transaction;
     elmo:sequentialFlow (
       dbeerpedia:PreUpdateStep
-      #dbeerpedia:AssertNoDuplicated
+      dbeerpedia:AssertNoDuplicated
       dbeerpedia:AssertIfNotExists
       dbeerpedia:AssertIfExists
       dbeerpedia:ValidationStep
