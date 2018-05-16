@@ -51,11 +51,8 @@ public class Context {
     if (parameterValues.containsKey("subject")) {
       subject = parameterValues.get("subject");
     }
-    contextXml = String.format(CONTEXT_TEMPLATE, docRoot, docRoot, linkstrategy, title, path,
-        fullUrl,
-        subject,
-        stylesheet);
-    System.out.println("Create this contextXML: \n" + contextXml);
+    contextXml = String.format(CONTEXT_TEMPLATE, docRoot, linkstrategy, title, path,
+        fullUrl, subject, stylesheet);
   }
 
   public String getContextXml() {
