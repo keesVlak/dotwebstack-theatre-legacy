@@ -11,7 +11,7 @@ import org.dotwebstack.ldtlegacy.vocabulary.XHTML;
 public class Context {
 
   private static final String CONTEXT_TEMPLATE =
-      "<context docroot='%s' staticroot='/assets' linkstrategy='%s'>"
+      "<context docroot='/%s' staticroot='/assets' linkstrategy='%s'>"
           + "<title>%s</title><request-path>%s</request-path>"
           + "<url>%s</url><subject>%s</subject>%s</context>";
 
