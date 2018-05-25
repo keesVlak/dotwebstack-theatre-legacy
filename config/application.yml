@@ -23,6 +23,7 @@ dotwebstack:
           path: http://www.w3.org/ns/shacl#resultPath
           message:
 
+# Example security config. Second password is 'blub'
 security:
   authentication: form
   users:
