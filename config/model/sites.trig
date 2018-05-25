@@ -9,7 +9,6 @@ GRAPH config:Theatre {
   config:Site a elmo:Site;
     elmo:domain "localhost";
     elmo:layout config:Layout;
-    elmo:basePath "dso";
   .
   config:Layout a elmo:Layout;
     xhtml:stylesheet "site-stylesheet.css";
