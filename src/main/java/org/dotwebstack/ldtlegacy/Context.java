@@ -11,7 +11,7 @@ import org.dotwebstack.ldtlegacy.vocabulary.XHTML;
 public class Context {
 
   private static final String CONTEXT_TEMPLATE =
-      "<context docroot='/%s' staticroot='/assets' linkstrategy='%s'>"
+      "<context docroot='/%s' staticroot='/%s/assets' linkstrategy='%s'>"
           + "<title>%s</title><request-path>%s</request-path>"
           + "<url>%s</url><subject>%s</subject>%s</context>";
 
@@ -51,7 +51,7 @@ public class Context {
     if (parameterValues.containsKey("subject")) {
       subject = parameterValues.get("subject");
     }
-    contextXml = String.format(CONTEXT_TEMPLATE, docRoot, linkstrategy, title, path,
+    contextXml = String.format(CONTEXT_TEMPLATE, docRoot, docRoot, linkstrategy, title, path,
         fullUrl, subject, stylesheet);
   }
 
