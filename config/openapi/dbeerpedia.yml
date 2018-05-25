@@ -1,0 +1,135 @@
+swagger: 2.0
+info:
+  title: DBeerPedia API
+  version: 1.0
+host: localhost
+basePath: /dbp/api/v1
+produces:
+  - application/json
+paths:
+  /concept:
+    post:
+      x-dotwebstack-transaction: "http://dbeerpedia.org#InsertConcept"
+      consumes:
+        - application/json
+      parameters:
+        - name: term
+          in: query
+          description: filter on starting letter of the concept
+          required: false
+          type: string
+          x-dotwebstack-parameter: "http://dbeerpedia.org#TermParameter"
+        - name: body
+          in: body
+          description: body
+          required: true
+          type: string
+          x-dotwebstack-rml-mapping: "http://dbeerpedia.org#RmlMapping"
+          schema:
+            type: object
+            properties:
+              cars:
+                type: array
+              name:
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              type: object
+    put:
+      x-dotwebstack-transaction: "http://dbeerpedia.org#InsertConcept"
+      consumes:
+        - application/json
+      parameters:
+        - name: term
+          in: query
+          description: filter on starting letter of the concept
+          required: false
+          type: string
+          x-dotwebstack-parameter: "http://dbeerpedia.org#TermParameter"
+        - name: body
+          in: body
+          description: body
+          required: true
+          type: string
+          x-dotwebstack-rml-mapping: "http://dbeerpedia.org#RmlMapping"
+          schema:
+            type: object
+            properties:
+              cars:
+                type: array
+              name:
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              type: object
+    get:
+      x-dotwebstack-information-product: "http://dbeerpedia.org#TupleConcept"
+      responses:
+        200:
+          description: OK
+  /breweries:
+    get:
+      x-dotwebstack-information-product: "http://dbeerpedia.org#TupleBreweries"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            required:
+              - name
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  format: string
+                sinds:
+                  type: integer
+                  format: int32
+                fte:
+                  type: number
+                  format: double
+                oprichting:
+                  type: string
+                  format: datetime
+                plaats:
+                  type: string
+                  format: string
+  /breweries/{id}:
+    get:
+      x-dotwebstack-information-product: "http://dbeerpedia.org#TupleBreweries"
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            required:
+              - naam
+              - sinds
+              - fte
+              - oprichting
+              - plaats
+            properties:
+              naam:
+                type: string
+                format: string
+              sinds:
+                type: integer
+                format: int32
+              fte:
+                type: number
+                format: double
+              oprichting:
+                type: string
+                format: datetime
+              plaats:
+                type: string
+                format: string

@@ -43,7 +43,7 @@
 					</xsl:for-each>
 				</xsl:for-each>
 				<!-- Might go wrong with multiple appearances and multiple submit buttons -->
-				<xsl:for-each select="rdf:RDF/rdf:Description[elmo2:appearance/@rdf:resource='http://dotwebstack.org/def/elmo#SubmitAppearance']/xhtml:link">
+				<xsl:for-each select="rdf:RDF/rdf:Description[elmo2:appearance/@rdf:resource='http://dotwebstack.org/def/elmo#SubmitAppearance' or elmo2:appearance/@rdf:resource='http://dotwebstack.org/def/elmo#ChangeSubmitAppearance']/xhtml:link">
 					<elmo:container><xsl:value-of select="."/></elmo:container>
 				</xsl:for-each>
 			</rdf:Description>

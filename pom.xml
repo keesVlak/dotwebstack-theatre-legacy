@@ -4,7 +4,7 @@
 
   <groupId>org.dotwebstack.theatre</groupId>
   <artifactId>dotwebstack-theatre-legacy</artifactId>
-  <version>0.0.21-SNAPSHOT</version>
+  <version>0.0.33-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>dotwebstack-theatre-legacy</name>
@@ -29,7 +29,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <saxon.version>9.1.0.8</saxon.version>
-    <dotwebstack.framework.version>0.0.19</dotwebstack.framework.version>
+    <dotwebstack.framework.version>0.0.38</dotwebstack.framework.version>
   </properties>
 
   <repositories>
@@ -42,9 +42,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon</artifactId>
-      <version>${saxon.version}</version>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.7</version>
     </dependency>
     <dependency>
       <groupId>com.github.rjeschke</groupId>
@@ -90,6 +90,11 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>${saxon.version}</version>
     </dependency>
   </dependencies>
 
