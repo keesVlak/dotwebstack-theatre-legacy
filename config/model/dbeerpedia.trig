@@ -23,6 +23,10 @@ GRAPH config:Theatre {
     elmo:endpoint "http://localhost:8890/sparql"^^xsd:anyURI;
   .
 
+  dbeerpedia:MyBackend a elmo:SparqlBackend;
+      elmo:endpoint "http://localhost:8890/sparql"^^xsd:anyURI;
+    .
+
   dbeerpedia:GraphBreweryListEndpoint a elmo:Endpoint;
     elmo:stage dbeerpedia:Stage;
     elmo:pathPattern "/graph-breweries";
@@ -92,29 +96,6 @@ GRAPH config:Theatre {
     ];
   .
 
-   # Transaction: replace resource from graph
-    dbeerpedia:InsertConcept a elmo:Transaction;
-      elmo:requiredParameter dbeerpedia:TermParameter;
-      elmo:sequentialFlow (
-        dbeerpedia:AssertIfExists
-        dbeerpedia:ValidationStep
-        dbeerpedia:PersistenceStep
-      );
-    .
-    dbeerpedia:AssertIfNotExists a elmo:AssertionStep;
-      	rdfs:label "Davo should exists";
-      	elmo:assert """
-      	  ASK  { ?s <http://www.w3.org/2000/01/rdf-schema#label> \"Davo brouwerij Deventer\"
-      	  }
-      	"""
-    .
-    dbeerpedia:AssertIfExists a elmo:AssertionStep;
-      	rdfs:label "Brouwtoren should not exists";
-      	elmo:assertNot """
-      	  ASK  { ?s <http://www.w3.org/2000/01/rdf-schema#label> ?term
-      	  }
-      	"""
-    .
     dbeerpedia:PersistenceStep a elmo:PersistenceStep;
       elmo:persistenceStrategy elmo-sp:InsertIntoGraph;
       elmo:backend dbeerpedia:Backend;

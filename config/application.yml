@@ -15,7 +15,7 @@ dotwebstack:
   config:
     resourcePath: file:./config
     host: localhost
-    linkstrategy: global
+    linkstrategy: local
     systemGraph: http://dotwebstack.org/configuration/Theatre
     shacl:
       uri:
