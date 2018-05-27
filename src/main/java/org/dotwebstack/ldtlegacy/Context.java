@@ -12,8 +12,9 @@ public class Context {
 
   private static final String CONTEXT_TEMPLATE =
       "<context docroot='%s' staticroot='%s/assets' linkstrategy='%s'>"
-          + "<title>%s</title><request-path>%s</request-path>"
-          + "<url>%s</url><subject>%s</subject>%s</context>";
+          + "<title>%s</title><request-path>%s</request-path><url>%s</url>"
+          + "<subject>%s</subject>%s<subdomain>%s</subdomain>"
+          + "</context>";
 
   private final String contextXml;
 
@@ -35,6 +36,10 @@ public class Context {
     if (stage.getSite().getBasePath() != null) {
       docRoot = stage.getSite().getBasePath();
     }
+    String subdomain = "";
+    if (stage.getBasePath() != null) {
+      subdomain = stage.getBasePath();
+    }
     Layout layout = stage.getLayout();
     if (layout == null) {
       layout = stage.getSite().getLayout();
@@ -52,7 +57,7 @@ public class Context {
       subject = parameterValues.get("subject");
     }
     contextXml = String.format(CONTEXT_TEMPLATE, docRoot, docRoot, linkstrategy, title, path,
-        fullUrl, subject, stylesheet);
+        fullUrl, subject, stylesheet, subdomain);
   }
 
   public String getContextXml() {
