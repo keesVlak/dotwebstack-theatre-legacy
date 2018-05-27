@@ -14,7 +14,7 @@ public class Context {
   private static final String CONTEXT_TEMPLATE =
       "<context docroot='%s' staticroot='%s/assets' linkstrategy='%s'>"
           + "<title>%s</title><request-path>%s</request-path><url>%s</url>"
-          + "<csrf>%</csrf><subject>%s</subject>%s<subdomain>%s</subdomain>"
+          + "<csrf>%s</csrf><subject>%s</subject>%s<subdomain>%s</subdomain>"
           + "</context>";
 
   private final String contextXml;

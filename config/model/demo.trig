@@ -741,8 +741,13 @@ config:AmersfoortEndpoint a elmo:Endpoint;
 #
 # ==========================
 
-  config:Login a elmo:Representation;
+  config:LoginEndpoint a elmo:Endpoint;
     elmo:pathPattern "/login";
+    elmo:stage config:Stage;
+    elmo:getRepresentation config:Login;
+  .
+
+  config:Login a elmo:Representation;
     elmo:stage config:Stage;
     elmo:appearance [ a elmo:LoginAppearance];
     elmo:informationProduct config:LoginData;
