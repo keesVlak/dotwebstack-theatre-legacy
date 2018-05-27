@@ -23,16 +23,20 @@ dotwebstack:
           path: http://www.w3.org/ns/shacl#resultPath
           message:
 
-# Example security config. Second password is 'blub'
+# Example security config. First password is 'password'. Second password is 'blub'
+# This example "secures" the path /demo/editor
+# Only users with the role "editor" will be allowed access
+# The user identified with "user2" has a different role, and will receive a 403 after succesfull login
+# To use this configuration, please be sure to add the "dotwebstack-theatre-security" dependency in pom.xml
 security:
   authentication: form
   users:
     - user: user
       password: $2a$11$Z0uBLK6ocuMoqVYFUimZre./Y4iBq5v8IrhOVpR.oVJzJK6V7.lVu
-      role: USER
+      role: editor
     - user: user2
       password: $2a$11$XmoBho2sMxvNfm7ogh/OdOX7EUF..s7fN96hVqqCGVCtE60xPzyI.
-      role: anders
+      role: reader
   protect:
     - path: /demo/editor
-      role: USER
+      role: editor
