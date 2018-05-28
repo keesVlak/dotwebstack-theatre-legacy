@@ -30,6 +30,7 @@ dotwebstack:
 # To use this configuration, please be sure to add the "dotwebstack-theatre-security" dependency in pom.xml
 security:
   authentication: form
+  loginPage: /login
   users:
     - user: user
       password: $2a$11$Z0uBLK6ocuMoqVYFUimZre./Y4iBq5v8IrhOVpR.oVJzJK6V7.lVu

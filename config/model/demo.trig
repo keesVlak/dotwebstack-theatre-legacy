@@ -742,7 +742,7 @@ config:AmersfoortEndpoint a elmo:Endpoint;
 # ==========================
 
   config:LoginEndpoint a elmo:Endpoint;
-    elmo:pathPattern "/login";
+    elmo:pathPattern "/aquo/login";
     elmo:stage config:Stage;
     elmo:getRepresentation config:Login;
   .

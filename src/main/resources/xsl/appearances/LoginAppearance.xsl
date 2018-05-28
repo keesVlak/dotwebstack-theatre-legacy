@@ -41,7 +41,7 @@
 <xsl:output method="xml" indent="yes"/>
 
 <xsl:template match="rdf:RDF" mode="LoginAppearance">
-	<form class="form-signin" action="{$docroot}/login" method="post">
+	<form class="form-signin" action="#" method="post">
 		<h2 class="form-signin-heading">Sign in</h2>
 		<label for="username" class="sr-only">Username</label>
 		<input type="text" id="username" name="username" class="form-control" placeholder="Username" required="required" autofocus="autofocus"/>
