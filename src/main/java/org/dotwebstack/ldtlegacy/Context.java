@@ -46,10 +46,10 @@ public class Context {
       layout = stage.getSite().getLayout();
     }
     if (layout != null) {
-      stylesheet = String.format("<stylesheet href='/%s'/>", layout.getOptions().size());
+      stylesheet = String.format("<stylesheet href='%s'/>", layout.getOptions().size());
       if (layout.getOptions().containsKey(XHTML.STYLESHEET)) {
         stylesheet = String.format(
-            "<stylesheet href='/%s/assets/css/%s'/>", docRoot,
+            "<stylesheet href='%s/assets/css/%s'/>", docRoot,
             layout.getOptions().get(XHTML.STYLESHEET).stringValue());
       }
     }
