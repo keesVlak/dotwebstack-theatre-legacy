@@ -11,15 +11,15 @@ import org.dotwebstack.ldtlegacy.vocabulary.XHTML;
 public class Context {
 
   private static final String CONTEXT_TEMPLATE =
-      "<context staticroot='/assets' linkstrategy='%s'>"
-          + "<title>%s</title><request-path>%s</request-path>"
-              + "<url>%s</url><subject>%s</subject>%s</context>";
+      "<context docroot='%s' staticroot='%s/assets' linkstrategy='%s'>"
+          + "<title>%s</title><request-path>%s</request-path><url>%s</url>"
+          + "<subject>%s</subject>%s<subdomain>%s</subdomain>"
+          + "</context>";
 
   private final String contextXml;
-      
-  public Context(@NonNull ContainerRequestContext containerRequestContext, String linkstrategy,
-      Stage stage, Map<String, String> parameterValues) {
 
+  public Context(@NonNull ContainerRequestContext containerRequestContext, String linkstrategy,
+                 Stage stage, Map<String, String> parameterValues) {
     URI uri = containerRequestContext.getUriInfo().getAbsolutePath();
 
     /*
@@ -32,14 +32,23 @@ public class Context {
       title = stage.getTitle();
     }
     String stylesheet = "";
+    String docRoot = "";
+    if (stage.getSite().getBasePath() != null) {
+      docRoot = stage.getSite().getBasePath();
+    }
+    String subdomain = "";
+    if (stage.getBasePath() != null) {
+      subdomain = stage.getBasePath();
+    }
     Layout layout = stage.getLayout();
     if (layout == null) {
       layout = stage.getSite().getLayout();
     }
     if (layout != null) {
-      stylesheet = String.format("<stylesheet href='%s'/>",layout.getOptions().size());
+      stylesheet = String.format("<stylesheet href='%s'/>", layout.getOptions().size());
       if (layout.getOptions().containsKey(XHTML.STYLESHEET)) {
-        stylesheet = String.format("<stylesheet href='/assets/css/%s'/>",
+        stylesheet = String.format(
+            "<stylesheet href='%s/assets/css/%s'/>", docRoot,
             layout.getOptions().get(XHTML.STYLESHEET).stringValue());
       }
     }
@@ -47,8 +56,8 @@ public class Context {
     if (parameterValues.containsKey("subject")) {
       subject = parameterValues.get("subject");
     }
-    contextXml = String.format(CONTEXT_TEMPLATE, linkstrategy, title, path, fullUrl, subject,
-        stylesheet);
+    contextXml = String.format(CONTEXT_TEMPLATE, docRoot, docRoot, linkstrategy, title, path,
+        fullUrl, subject, stylesheet, subdomain);
   }
 
   public String getContextXml() {
