@@ -27,6 +27,10 @@ DotWebStack Theatre needs several configuration files. Preferably they should be
 
 More information about the configuration can be found in [https://github.com/dotwebstack/dotwebstack].
 
+### Setup
+
+The default configuration expects that you are running the theatre at root level (for example: `http://localhost:8080`/). Please read [STATICROOT.md](STATICROOT.md) in case your situation differs.
+
 ### Run with profile (.jar)
 
 Prerequisites:
