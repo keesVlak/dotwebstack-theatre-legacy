@@ -31,7 +31,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <saxon.version>9.1.0.8</saxon.version>
-    <dotwebstack.framework.version>0.0.39</dotwebstack.framework.version>
+    <dotwebstack.framework.version>0.0.39-SNAPSHOT</dotwebstack.framework.version>
   </properties>
 
   <repositories>
@@ -79,6 +79,11 @@
     <dependency>
       <groupId>org.dotwebstack.framework</groupId>
       <artifactId>dotwebstack-frontend-openapi</artifactId>
+      <version>${dotwebstack.framework.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.dotwebstack.framework</groupId>
+      <artifactId>dotwebstack-frontend-soap</artifactId>
       <version>${dotwebstack.framework.version}</version>
     </dependency>
     <dependency>
